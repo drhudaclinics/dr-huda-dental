@@ -76,6 +76,23 @@ small.cur{font-size:.72em;color:var(--ink-3);font-weight:500;margin-inline-start
 .top-title h1{font-size:23px}
 .top-title p{margin:0;font-size:12.5px;color:var(--ink-3)}
 .net-st{display:inline-flex;align-items:center;gap:5px;margin-inline-start:6px;font-size:11.5px;font-weight:600;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}.net-st[hidden]{display:none}
+/* cash report charts */
+:root{--cv-in:#1baf7a;--cv-due:#eb6834;--cm1:#2a78d6;--cm2:#eda100;--cm3:#e87ba4;--cm4:#6250d6;--cm5:#1baf7a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--cv-in:#199e70;--cv-due:#d95926;--cm1:#3987e5;--cm2:#c98500;--cm3:#d55181;--cm4:#9085e9;--cm5:#199e70}}
+:root[data-theme="dark"]{--cv-in:#199e70;--cv-due:#d95926;--cm1:#3987e5;--cm2:#c98500;--cm3:#d55181;--cm4:#9085e9;--cm5:#199e70}
+.cr-grid2{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}.cr-grid2>*{min-width:0}@media (max-width:900px){.cr-grid2{grid-template-columns:1fr}}
+.cr-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}.cr-svg{display:block;width:100%;min-width:520px;height:auto;direction:ltr}.cr-grid{stroke:var(--line-2);stroke-width:1}.cr-base{stroke:var(--line);stroke-width:1}.cr-ax{fill:var(--ink-3);font-size:10.5px;font-family:inherit}.cr-in{fill:var(--cv-in)}
+.cr-hit:hover .cr-in{opacity:.8}.cr-note{margin:6px 0 0;font-size:12px;color:var(--ink-3)}
+.cr-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);margin-bottom:10px}.cr-legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-inline-end:6px;vertical-align:-1px}
+.cr-cl{display:grid;gap:14px}.cr-row{display:grid;grid-template-columns:minmax(110px,170px) 1fr;gap:12px;align-items:center}@media (max-width:560px){.cr-row{grid-template-columns:1fr;gap:6px}}
+.cr-name{display:flex;align-items:center;gap:8px;min-width:0}.cr-name b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cr-dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--h);flex:none}
+.cr-bars{display:grid;gap:4px}.cr-b{display:flex;align-items:center;gap:8px;height:16px;cursor:default}.cr-b i{display:block;height:12px;border-radius:0 4px 4px 0;min-width:0}html[dir=rtl] .cr-b i,.cr-b i{border-radius:4px 0 0 4px}
+.cr-b i.in{background:var(--cv-in)}.cr-b i.due{background:var(--cv-due)}.cr-b span{font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.cr-stack{display:flex;gap:2px;height:22px;border-radius:6px;overflow:hidden;margin:4px 0 14px}.cr-stack i{min-width:3px}
+.cr-mlist{display:grid;gap:8px}.cr-mlist>div{display:flex;align-items:center;gap:8px;font-size:13.5px}.cr-mlist small{color:var(--ink-3);min-width:36px;text-align:left}.cr-sw{width:10px;height:10px;border-radius:3px;flex:none}
+.cr-tbl td.cr-nm{white-space:nowrap}.cr-tbl th{white-space:nowrap}.cr-tbl .cr-total td{border-top:2px solid var(--line);font-weight:700;background:var(--surface-2)}
+.cr-tip{position:fixed;z-index:200;pointer-events:none;background:var(--ink,#0F201E);color:var(--surface,#fff);border-radius:10px;padding:7px 11px;font-size:12.5px;display:grid;gap:2px;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:260px}.cr-tip[hidden]{display:none}.cr-tip span{opacity:.75;font-size:11.5px}
 .gal-picks{display:grid;grid-template-columns:1fr 1fr;gap:12px}.gal-pick{position:relative;display:block;aspect-ratio:4/3;border:1.5px dashed var(--line);border-radius:14px;overflow:hidden;cursor:pointer;background:var(--bg-2,#f4f6f5)}.gal-pick.has{border-style:solid}
 .gal-ph{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:4px;color:var(--ink-3);text-align:center}.gal-ph b{color:var(--ink);font-size:14px}.gal-ph small{font-size:12px}.gal-pick img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .gal-adm{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px}.gal-it{overflow:hidden;padding:0}.gal-it.off{opacity:.55}.gal-two{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line)}.gal-two figure{margin:0;position:relative;aspect-ratio:4/3;background:#ddd}.gal-two img{width:100%;height:100%;object-fit:cover;display:block}.gal-two figcaption{position:absolute;top:8px;inset-inline-start:8px;background:rgba(0,0,0,.6);color:#fff;font-size:11.5px;padding:2px 8px;border-radius:999px}
@@ -720,7 +737,7 @@ const INST_ST={paid:'مدفوع',late:'متأخر',soon:'قريب',open:'قاد�
 const MONTHS_AR=['كانون الثاني','شباط','آذار','نيسان','أيار','حزيران','تموز','آب','أيلول','تشرين الأول','تشرين الثاني','كانون الأول'];
 const DAYS_AR=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 const COLS=['clinics','doctors','staff','patients','treatments','appointments','labs','labOrders','labPayments','suppliers','supplierTx','expenses','payouts','closings','cashMoves','months','settings','followups','bookings','publicSite'];
-const TITLES={dashboard:'لوحة التحكم',appointments:'المواعيد',patients:'المرضى',patient:'ملف المريض',accounts:'الحسابات والأقساط',lab:'طلبات المختبر',labs:'حسابات المختبرات',suppliers:'الموردون والمواد',clinics:'العيادات',doctors:'الأطباء',staff:'السكرتارية والموظفون',expenses:'المصاريف التشغيلية',payroll:'الرواتب والمستحقات',reports:'التقرير المالي',prefs:'الإعدادات والنسخ الاحتياطي',mydash:'لوحتي',debts:'ذمم المرضى',import:'إدخال السجلات القديمة',safe:'صندوق د. هدى',monthclose:'إقفال الشهر',closing:'الجرد اليومي',myday:'جرد عملي اليومي',docreport:'تقرير عمل الطبيب',desk:'لوحة الاستقبال',join:'ربط الحساب',chairs:'حساب الكراسي',users:'المستخدمون والصلاحيات',noaccess:'لا صلاحيات',followup:'متابعة المرضى',reminders:'تذكير المواعيد',bookings:'طلبات الحجز من الموقع',clinic:'لوحة العيادة',work:'شغل اليوم',audit:'سجل التدقيق',gallery:'معرض قبل وبعد',doctorsReport:'تقرير الأطباء',perf:'أداء وتقييم الأطباء',failed:'الحالات الفاشلة'};
+const TITLES={dashboard:'لوحة التحكم',appointments:'المواعيد',patients:'المرضى',patient:'ملف المريض',accounts:'الحسابات والأقساط',lab:'طلبات المختبر',labs:'حسابات المختبرات',suppliers:'الموردون والمواد',clinics:'العيادات',doctors:'الأطباء',staff:'السكرتارية والموظفون',expenses:'المصاريف التشغيلية',payroll:'الرواتب والمستحقات',reports:'التقرير المالي',prefs:'الإعدادات والنسخ الاحتياطي',mydash:'لوحتي',debts:'ذمم المرضى',import:'إدخال السجلات القديمة',safe:'صندوق د. هدى',monthclose:'إقفال الشهر',closing:'الجرد اليومي',myday:'جرد عملي اليومي',docreport:'تقرير عمل الطبيب',desk:'لوحة الاستقبال',join:'ربط الحساب',chairs:'حساب الكراسي',users:'المستخدمون والصلاحيات',noaccess:'لا صلاحيات',followup:'متابعة المرضى',reminders:'تذكير المواعيد',bookings:'طلبات الحجز من الموقع',clinic:'لوحة العيادة',work:'شغل اليوم',audit:'سجل التدقيق',cashrep:'التقرير النقدي',gallery:'معرض قبل وبعد',doctorsReport:'تقرير الأطباء',perf:'أداء وتقييم الأطباء',failed:'الحالات الفاشلة'};
 const NAV=[
  {g:'نظرة عامة',items:[['dashboard','لوحة التحكم','grid']]},
  {g:'العمل اليومي',items:[['work','شغل اليوم','tooth'],['appointments','المواعيد','calendar'],['reminders','تذكير المواعيد','bell'],['bookings','طلبات الحجز','inbox'],['patients','المرضى','users'],['followup','متابعة المرضى','chat'],['accounts','الحسابات والأقساط','wallet'],['chairs','حساب الكراسي','chair'],['import','إدخال السجلات القديمة','file']]},
@@ -728,10 +745,10 @@ const NAV=[
  {g:'المختبرات',items:[['lab','طلبات المختبر','tooth'],['labs','حسابات المختبرات','flask']]},
  {g:'المشتريات',items:[['suppliers','الموردون والمواد','box']]},
  {g:'الإدارة',items:[['clinics','العيادات','building'],['doctors','الأطباء','steth'],['staff','السكرتارية','id'],['users','المستخدمون والصلاحيات','gear'],['audit','سجل التدقيق','receipt'],['gallery','معرض قبل وبعد','file'],['expenses','المصاريف','receipt'],['payroll','الرواتب والمستحقات','cash']]},
- {g:'التقارير',items:[['reports','التقرير المالي','chart'],['doctorsReport','تقرير الأطباء','steth'],['perf','أداء وتقييم الأطباء','chart'],['failed','الحالات الفاشلة','alert'],['docreport','تقرير طبيب شهري','id'],['prefs','الإعدادات','gear']]},
+ {g:'التقارير',items:[['reports','التقرير المالي','chart'],['cashrep','التقرير النقدي','wallet'],['doctorsReport','تقرير الأطباء','steth'],['perf','أداء وتقييم الأطباء','chart'],['failed','الحالات الفاشلة','alert'],['docreport','تقرير طبيب شهري','id'],['prefs','الإعدادات','gear']]},
 ];
 const NAV_DOCTOR=[{g:'عملي',items:[['mydash','لوحتي','grid'],['appointments','مواعيدي','calendar'],['patients','مرضاي','users'],['lab','طلبات المختبر','tooth'],['myday','جرد عملي اليومي','receipt'],['doctorsReport','تقرير عملي','chart']]}];
-const NAV_STAFF=[{g:'الاستقبال',items:[['desk','لوحة الاستقبال','grid'],['clinic','لوحة عيادتي','building'],['work','شغل اليوم','tooth'],['appointments','المواعيد','calendar'],['reminders','تذكير المواعيد','bell'],['bookings','طلبات الحجز','inbox'],['patients','المرضى','users'],['followup','متابعة المرضى','chat'],['accounts','الحسابات والأقساط','wallet'],['import','إدخال السجلات','file']]},{g:'العيادة',items:[['chairs','حساب الكراسي','chair'],['lab','طلبات المختبر','tooth'],['debts','ديون العيادة','alert'],['closing','الجرد اليومي','check'],['suppliers','موردو العيادة','box'],['expenses','مصاريف العيادة','receipt']]}];
+const NAV_STAFF=[{g:'الاستقبال',items:[['desk','لوحة الاستقبال','grid'],['clinic','لوحة عيادتي','building'],['work','شغل اليوم','tooth'],['appointments','المواعيد','calendar'],['reminders','تذكير المواعيد','bell'],['bookings','طلبات الحجز','inbox'],['patients','المرضى','users'],['followup','متابعة المرضى','chat'],['accounts','الحسابات والأقساط','wallet'],['import','إدخال السجلات','file']]},{g:'العيادة',items:[['chairs','حساب الكراسي','chair'],['lab','طلبات المختبر','tooth'],['debts','ديون العيادة','alert'],['closing','الجرد اليومي','check'],['cashrep','التقرير النقدي','wallet'],['suppliers','موردو العيادة','box'],['expenses','مصاريف العيادة','receipt']]}];
 const APP_URL=window.STANDALONE?location.href.split('#')[0]:'https://claude.ai/artifact/E8EehSfNzuCZxu7PiyjbZt';
 const QA_DOCTOR=[['quickWork','تسجيل عمل','tooth'],['newAppt','موعد جديد','calendar'],['newPatient','مريض جديد','users'],['newLab','طلب مختبر','flask']];
 const QA_STAFF=[['newAppt','موعد جديد','calendar'],['newPatient','مريض جديد','users'],['oldPatient','مريض قديم','file'],['quickPay','تسديد','cash'],['quickWork','تسجيل علاج','tooth'],['newLab','طلب مختبر','flask'],['newExpense','مصروف','receipt']];
@@ -914,7 +931,7 @@ const patientName=id=>get('patients',id)?.name||'—';
 const patientLabel=p=>`${p.name} — ${p.phone||'بدون رقم'}`;
 /* ---------- Roles: owner/admin sees everything, a doctor sees only his own work (no money), a secretary sees her clinic and linked doctors ---------- */
 const HOME={admin:'dashboard',doctor:'mydash',staff:'desk',pending:'join'};
-const ROLE_PAGES={doctor:['mydash','myday','docreport','doctorsReport','appointments','patients','patient','lab'],staff:['work','clinic','desk','import','debts','closing','suppliers','appointments','patients','patient','accounts','lab','expenses','chairs','noaccess','followup','reminders','bookings'],pending:['join']};
+const ROLE_PAGES={doctor:['mydash','myday','docreport','doctorsReport','appointments','patients','patient','lab'],staff:['work','clinic','cashrep','desk','import','debts','closing','suppliers','appointments','patients','patient','accounts','lab','expenses','chairs','noaccess','followup','reminders','bookings'],pending:['join']};
 const testMode=()=>get('settings','app')?.testAdmin===true;
 const canOwn=()=>Store.isOwner||Store.mode!=='cloud';
 function role(){return M('role',()=>{
@@ -2284,7 +2301,7 @@ const staffPerms=st=>{if(!st)return {};if(st.access==='admin'){const o={};PERM_K
 const staffClinicIds=st=>st?[...new Set([st.clinicId].concat(st.clinicIds||[]))].filter(Boolean):[];
 function can(k){const r=role();if(r.kind==='admin')return true;if(r.kind==='staff')return !!staffPerms(myStaff())[k];return false}
 const noPerm=()=>{toast('هذه العملية غير مسموحة لحسابك. راجع الإدارة.','warn');return false};
-const PAGE_PERM={work:'p_patients',clinic:'money',patient:'p_patients',reminders:'p_appointments',bookings:'p_appointments'};
+const PAGE_PERM={cashrep:'money',work:'p_patients',clinic:'money',patient:'p_patients',reminders:'p_appointments',bookings:'p_appointments'};
 const QA_PERM={newAppt:'p_appointments',newPatient:'addPatient',oldPatient:'addPatient',quickPay:'pay',quickWork:'p_patients',newLab:'p_lab',newExpense:'p_expenses'};
 function homeOf(){const k=role().kind;if(k==='staff'){const pages=NAV_STAFF.flatMap(g=>g.items.map(i=>i[0]));return pages.find(allowed)||'noaccess'}return HOME[k]}
 const tplOf=pm=>{const on=PERM_KEYS.filter(k=>pm[k]);const t=PERM_TPL.find(([,,ks])=>ks.length===on.length&&ks.every(k=>pm[k]));return t?t[1]:'صلاحيات مخصّصة'};
@@ -3677,6 +3694,70 @@ PAGES.gallery=()=>{
 ACTIONS.galNew=()=>galleryForm();
 ACTIONS.galShow=async d=>{const g=(galCache||[]).find(x=>x.id===d.id);if(!g)return;const n=Object.assign({},g,{show:g.show===false});delete n.id;await galSave(d.id,n);galCache=null;scheduleRender()};
 ACTIONS.galDel=d=>confirmBox('حذف هذه الصورة من الموقع نهائياً؟',async()=>{await galDel(d.id);audit('gallery_delete','',{col:'publicGallery',id:d.id});galCache=null;toast('انحذفت')});
+
+/* ---------- Cash report: per clinic, for any period. Collected (by method), drawer movement, and what is still owed ---------- */
+const CR_METHODS=PAY_METHODS.map(([k,l],i)=>[k,l,'var(--cm'+(i+1)+')']);
+const crIds=()=>optClinics().map(x=>x[0]).filter(id=>state.clinic==='all'||id===state.clinic);
+function crData(rg){return M('cr:'+rg.join('|')+':'+state.clinic,()=>{
+  const ids=crIds();const idset=new Set(ids);const z=()=>({paid:0,n:0,m:{},cashIn:0,out:0,toMain:0,billed:0,billedPaid:0,billedLeft:0,txN:0,owed:0,late:0,debtors:new Set()});
+  const by=new Map(ids.map(id=>[id,z()]));const tot=z();const days=new Map();
+  for(const p of payments()){if(!idset.has(p.clinicId)||!inR(p.date,rg))continue;const a=num(p.amount),k=p.method||'cash';for(const r of [by.get(p.clinicId),tot]){r.paid+=a;r.n++;r.m[k]=(r.m[k]||0)+a}days.set(p.date,(days.get(p.date)||0)+a)}
+  for(const id of ids){const f=cashFlows().get(id);if(!f)continue;f.forEach((x,d)=>{if(!inR(d,rg))return;for(const r of [by.get(id),tot]){r.cashIn+=x.in;r.out+=x.out;r.toMain+=x.toMain}})}
+  for(const t of all('treatments')){if(!idset.has(t.clinicId))continue;const b=Math.max(0,tBal(t));
+    for(const r of [by.get(t.clinicId),tot]){r.owed+=b;if(b>0)r.debtors.add(t.patientId);if(!t.legacy&&inR(t.date,rg)){r.billed+=tTotal(t);r.billedPaid+=Math.min(tTotal(t),tPaid(t));r.billedLeft+=b;r.txN++}}}
+  for(const x of instItems()){if(!idset.has(x.clinicId)||x.due>TODAY)continue;for(const r of [by.get(x.clinicId),tot])r.late+=Math.max(0,x.left)}
+  return {ids,by,tot,days}})}
+/* group days into days / weeks / months depending on the length of the period */
+function crBuckets(rg,days){const n=Math.round((parse(rg[1])-parse(rg[0]))/864e5)+1;const unit=n<=45?'d':n<=210?'w':'m';const out=[];
+  const key=d=>{if(unit==='d')return d;if(unit==='m')return d.slice(0,7);const x=parse(d);const w=addDays(d,-((x.getDay()+1)%7));return w<rg[0]?rg[0]:w};
+  const lab=k=>unit==='d'?String(+k.slice(8)):unit==='m'?MONTHS_AR[+k.slice(5,7)-1]:`${+k.slice(8)}/${+k.slice(5,7)}`;
+  const tip=k=>unit==='d'?`${dayLabel(k)}`:unit==='m'?monthLabel(k):`أسبوع ${fmtDate(k)}`;
+  const m=new Map();for(let d=rg[0];d<=rg[1];d=addDays(d,1)){const k=key(d);if(!m.has(k))m.set(k,0)}
+  days.forEach((v,d)=>{const k=key(d);if(m.has(k))m.set(k,m.get(k)+v)});
+  m.forEach((v,k)=>out.push({k,v,lab:lab(k),tip:tip(k)}));return {unit,list:out}}
+const crNice=v=>{if(v<=0)return 1;const e=Math.pow(10,Math.floor(Math.log10(v)));const f=v/e;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*e};
+const crShort=v=>v>=1e6?(Math.round(v/1e5)/10)+' م':v>=1e3?Math.round(v/1e3)+' أ':String(Math.round(v));
+function crTrend(rg,days){const {unit,list}=crBuckets(rg,days);const W=720,H=240,pl=48,pr=10,pt=14,pb=28;const mx=crNice(Math.max(0,...list.map(x=>x.v)));
+  const bw=(W-pl-pr)/list.length,barW=Math.max(4,Math.min(26,bw-6));const y=v=>pt+(H-pt-pb)*(1-v/mx);const every=Math.max(1,Math.ceil(list.length/(unit==='d'?11:12)));
+  const grid=[0,.25,.5,.75,1].map(f=>`<line x1="${pl}" x2="${W-pr}" y1="${y(mx*f)}" y2="${y(mx*f)}" class="cr-grid"/><text x="${pl-6}" y="${y(mx*f)+4}" class="cr-ax" text-anchor="end">${crShort(mx*f)}</text>`).join('');
+  const bars=list.map((x,i)=>{const cx=pl+bw*i+bw/2,h=H-pb-y(x.v);return `<g class="cr-hit" data-tip="${esc(x.tip)}|${fmt(x.v)} د.ع"><rect x="${pl+bw*i}" y="${pt}" width="${bw}" height="${H-pt-pb}" fill="transparent"/>${x.v>0?`<path d="${crBar(cx-barW/2,y(x.v),barW,h)}" class="cr-in"/>`:''}${i%every===0?`<text x="${cx}" y="${H-8}" class="cr-ax" text-anchor="middle">${esc(x.lab)}</text>`:''}</g>`}).join('');
+  return `<div class="cr-scroll"><svg viewBox="0 0 ${W} ${H}" class="cr-svg" role="img" aria-label="المحصّل خلال الفترة">${grid}<line x1="${pl}" x2="${W-pr}" y1="${H-pb}" y2="${H-pb}" class="cr-base"/>${bars}</svg></div><p class="cr-note">${unit==='d'?'كل عمود = يوم':unit==='w'?'كل عمود = أسبوع':'كل عمود = شهر'} · مرّر أو اضغط على العمود لتشوف المبلغ</p>`}
+/* a bar with 4px rounded top, square at the baseline */
+function crBar(x,y,w,h){const r=Math.min(4,w/2,h);return `M${x},${y+h}V${y+r}Q${x},${y} ${x+r},${y}H${x+w-r}Q${x+w},${y} ${x+w},${y+r}V${y+h}Z`}
+function crClinicBars(d){const rows=d.ids.map(id=>({id,r:d.by.get(id)})).sort((a,b)=>b.r.paid-a.r.paid);const mx=Math.max(1,...rows.map(x=>Math.max(x.r.paid,x.r.billedLeft)));
+  return `<div class="cr-legend"><span><i style="background:var(--cv-in)"></i>المحصّل بالفترة</span><span><i style="background:var(--cv-due)"></i>غير محصّل من شغل الفترة</span></div>
+  <div class="cr-cl">${rows.map(({id,r})=>`<div class="cr-row"><div class="cr-name"><span class="cr-dot" style="--h:${clinicHue(id)}"></span><b>${esc(clinicName(id))}</b></div>
+   <div class="cr-bars"><div class="cr-b" data-tip="${esc(clinicName(id))}|المحصّل ${fmt(r.paid)} د.ع"><i class="in" style="width:${r.paid?Math.max(1.5,r.paid/mx*100):0}%"></i><span>${fmt(r.paid)}</span></div>
+   <div class="cr-b" data-tip="${esc(clinicName(id))}|غير محصّل من شغل الفترة ${fmt(r.billedLeft)} د.ع"><i class="due" style="width:${r.billedLeft?Math.max(1.5,r.billedLeft/mx*100):0}%"></i><span>${fmt(r.billedLeft)}</span></div></div></div>`).join('')}</div>`}
+function crMethods(r){const tot=r.paid;if(!tot)return '<p class="muted" style="margin:0">ما أكو تحصيل بهذه الفترة</p>';const parts=CR_METHODS.map(([k,l,c])=>({k,l,c,v:r.m[k]||0})).filter(x=>x.v>0);const other=tot-sum(parts,x=>x.v);if(other>0)parts.push({k:'other',l:'أخرى',c:'var(--ink-3)',v:other});
+  return `<div class="cr-stack" role="img" aria-label="طرق الدفع">${parts.map(x=>`<i style="flex:${x.v};background:${x.c}" data-tip="${esc(x.l)}|${fmt(x.v)} د.ع · ${pctOf(x.v,tot)}%"></i>`).join('')}</div>
+  <div class="cr-mlist">${parts.map(x=>`<div><span class="cr-sw" style="background:${x.c}"></span><span class="grow">${esc(x.l)}</span><b class="num">${fmt(x.v)}</b><small>${pctOf(x.v,tot)}%</small></div>`).join('')}</div>`}
+PAGES.cashrep=()=>{
+  if(!seeMoney()||isDoctor())return `<section class="card">${empty('لا صلاحية','التقرير للإدارة فقط')}</section>`;
+  const rg=drRange();const p=state.drPreset||'month';const d=crData(rg);const T=d.tot;
+  const head=`<div class="dr-bar"><div class="seg" role="tablist">${DR_PRESETS.map(([k,l])=>`<button class="${p===k?'on':''}" data-act="drPreset" data-v="${k}">${l}</button>`).join('')}</div>${p==='custom'?`<div class="toolbar"><label class="dr-d">من <input type="date" class="inline-sel" value="${rg[0]}" data-chg="drFrom" aria-label="من تاريخ"></label><label class="dr-d">إلى <input type="date" class="inline-sel" value="${rg[1]}" data-chg="drTo" aria-label="إلى تاريخ"></label></div>`:''}</div>`;
+  const elec=T.paid-(T.m.cash||0);const rate=pctOf(T.billedPaid,T.billed);
+  const kp=`<div class="kpis">${kpi('المحصّل بالفترة',money(T.paid),`${T.n} تسديد · نقد ${fmt(T.m.cash||0)} · إلكتروني ${fmt(elec)}`,'hl')}${kpi('شغل الفترة',money(T.billed),`${T.txN} علاج · انحصّل منه ${rate}%`)}${kpi('غير محصّل من شغل الفترة',`<span class="warn-t">${money(T.billedLeft)}</span>`,'باقي على المرضى من علاجات هذه الفترة')}${kpi('كل الديون الحالية',`<span class="bad-t">${money(T.owed)}</span>`,`${T.debtors.size} مريض · أقساط متأخرة ${fmt(T.late)}`)}</div>`;
+  const tblRows=d.ids.map(id=>[id,d.by.get(id)]).sort((a,b)=>b[1].paid-a[1].paid);
+  const tm=T.toMain>0;
+  const row=(name,r,cls)=>`<tr class="${cls||''}"><td class="cr-nm">${name}</td><td class="n"><b>${fmt(r.paid)}</b></td><td class="n">${fmt(r.m.cash||0)}</td><td class="n">${fmt(r.paid-(r.m.cash||0))}</td><td class="n">${fmt(r.out)}</td>${tm?`<td class="n">${fmt(r.toMain)}</td>`:''}<td class="n">${fmt(r.billed)}</td><td class="n warn-t">${fmt(r.billedLeft)}</td><td class="n bad-t">${fmt(r.owed)}</td><td class="n">${fmt(r.late)}</td></tr>`;
+  return `${secHead('التقرير النقدي',rangeLabel(rg)+(state.clinic==='all'?' · كل العيادات':' · '+esc(clinicName(state.clinic))),`<button class="btn" data-act="crExport">${ic('down',16)} تصدير Excel</button>`)}${head}${kp}
+  <div class="cr-grid2"><section class="card"><div class="card-h"><h3>${ic('chart',18)} التحصيل خلال الفترة</h3><span class="chip">${fmt(T.paid)} د.ع</span></div><div class="pad" style="padding-top:4px">${crTrend(rg,d.days)}</div></section>
+  <section class="card"><div class="card-h"><h3>${ic('wallet',18)} طرق الدفع</h3></div><div class="pad" style="padding-top:4px">${crMethods(T)}</div></section></div>
+  ${d.ids.length>1?`<section class="card"><div class="card-h"><h3>${ic('building',18)} مقارنة العيادات</h3><span class="muted" style="font-size:12.5px">مرتبة حسب المحصّل</span></div><div class="pad" style="padding-top:4px">${crClinicBars(d)}</div></section>`:''}
+  <section class="card"><div class="card-h"><h3>التفاصيل حسب العيادة</h3></div><div class="tbl-wrap"><table class="tbl cr-tbl"><thead><tr><th>العيادة</th><th class="n">المحصّل</th><th class="n">نقد</th><th class="n">إلكتروني</th><th class="n">مصروف من الصندوق</th>${tm?'<th class="n">سُلّم لصندوق د. هدى</th>':''}<th class="n">شغل الفترة</th><th class="n">غير محصّل منه</th><th class="n">كل الديون</th><th class="n">أقساط متأخرة</th></tr></thead>
+  <tbody>${tblRows.map(([id,r])=>row(`<span class="cr-dot" style="--h:${clinicHue(id)}"></span> ${esc(clinicName(id))}`,r)).join('')}${tblRows.length>1?row('<b>المجموع</b>',T,'cr-total'):''}</tbody></table></div></section>
+  <p class="muted" style="font-size:12.5px;margin:0">«المحصّل» كل تسديد انسجل بالفترة. «شغل الفترة» العلاجات المسجّلة بالفترة بكلفتها الكاملة، و«غير محصّل منه» الباقي منها لحد اليوم. «كل الديون» كل اللي باقي على المرضى من كل الفترات.</p>`};
+ACTIONS.crExport=async()=>{const rg=drRange();const d=crData(rg);const q=v=>`"${String(v??'').replace(/"/g,'""')}"`;
+  const H=['العيادة','المحصّل','نقد',...PAY_METHODS.slice(1).map(m=>m[1]),'مصروف من الصندوق','سُلّم لصندوق د. هدى','شغل الفترة','غير محصّل منه','كل الديون','أقساط متأخرة','مرضى مدينين'];
+  const line=(n,r)=>[n,r.paid,r.m.cash||0,...PAY_METHODS.slice(1).map(m=>r.m[m[0]]||0),r.out,r.toMain,r.billed,r.billedLeft,r.owed,r.late,r.debtors.size].map(q).join(',');
+  const L=[[ 'التقرير النقدي',rangeLabel(rg)].map(q).join(','),'',H.map(q).join(','),...d.ids.map(id=>line(clinicName(id),d.by.get(id))),line('المجموع',d.tot)];
+  await saveFile(`التقرير-النقدي-${rg[0]}-${rg[1]}.csv`,'﻿'+L.join('\n'),'text/csv')};
+/* hover / tap tooltip for chart marks: data-tip="title|value" */
+(()=>{let tip=null;const show=(el,x,y)=>{if(!tip){tip=document.createElement('div');tip.className='cr-tip';document.body.appendChild(tip)}const [a,b]=String(el.dataset.tip).split('|');tip.innerHTML=`<b>${esc(b||'')}</b><span>${esc(a||'')}</span>`;tip.hidden=false;const w=tip.offsetWidth,h=tip.offsetHeight;tip.style.left=Math.max(8,Math.min(innerWidth-w-8,x-w/2))+'px';tip.style.top=Math.max(8,y-h-12)+'px'};
+  const hide=()=>{if(tip)tip.hidden=true};
+  document.addEventListener('pointermove',e=>{const el=e.target.closest&&e.target.closest('[data-tip]');if(el&&el.closest('.cr-page,#main'))show(el,e.clientX,e.clientY);else hide()},{passive:true});
+  document.addEventListener('pointerdown',e=>{const el=e.target.closest&&e.target.closest('[data-tip]');if(el)show(el,e.clientX,e.clientY);else hide()},{passive:true});addEventListener('scroll',hide,{passive:true})})();
 
 /* ---------- Forms ---------- */
 /* ---------- Suppliers: purchase lists with items, payments per list, balances ---------- */
