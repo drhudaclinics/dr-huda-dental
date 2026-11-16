@@ -2105,14 +2105,15 @@ function sessionForm(tid,pre){
   formModal({title:'تسجيل جلسة',sub:`${esc(patientName(t.patientId))} · الجلسة ${sessDone(t)+1}${num(t.plannedSessions)?' من '+num(t.plannedSessions):''}`,fields:[
     {k:'sum',type:'html',html:txSummaryHTML(t)},
     {k:'date',label:'تاريخ الجلسة',type:'date',req:true,half:nC<2,third:nC>1},{k:'doctorId',label:'الطبيب اللي عالج هذه الجلسة',type:'select',opts:optDoctors(),empty:'—',req:true,half:nC<2,third:nC>1},{k:'chair',label:'الكرسي',type:'select',opts:chairOpts(nC),empty:'—',third:true,show:()=>nC>1},
-    {k:'note',label:'ما تم في الجلسة',ph:'مثال: تحضير السن وأخذ الطبعة',list:'dl-procs'},
+    {k:'stage',label:'نوع الجلسة (تحدد نقاط الطبيب)',type:'select',opts:stageOpts(t),half:true},
+    {k:'note',label:'ما تم في الجلسة',ph:'مثال: تحضير السن وأخذ الطبعة',list:'dl-procs',half:true},
     {k:'addTx',label:'ظهر علاج جديد بهذه الجلسة (مثلاً قلع أو حشوة ثانية): أفتحله علاج بعد الحفظ',type:'checkbox'},
     {k:'amount',label:'المبلغ المدفوع في هذه الجلسة (اختياري)',type:'money',half:true,show:()=>money_&&bal>0&&can('pay')},Object.assign(fillField('amount',[[`كامل المتبقي (${fmt(bal)})`,bal]].concat((()=>{if(t.plan!=='installments')return [];const nx=schedStatus(t).find(x=>x.state!=='paid');const d=nx?Math.min(bal,num(nx.amount)-nx.paid):0;return d>0&&d!==bal?[[`القسط المستحق (${fmt(d)})`,d]]:[]})())),{show:()=>money_&&bal>0&&can('pay')}),{k:'method',label:'طريقة الدفع',type:'select',opts:PAY_METHODS,half:true,show:v=>money_&&num(v.amount)>0},
     {k:'prev',type:'html',html:'<div class="plan-preview" id="sess-prev"></div>',show:v=>money_&&num(v.amount)>0}].concat(nextFields(nxCtx,nxDef,t.patientId)),
-    values:Object.assign({date:pre.date||TODAY,doctorId:pre.doctorId||t.doctorId||defaultDoctor(),chair:String(pre.chair||lastChair||''),method:'cash'},nextValues(nxDef,pre,pre.date)),submit:'حفظ الجلسة',
+    values:Object.assign({date:pre.date||TODAY,doctorId:pre.doctorId||t.doctorId||defaultDoctor(),chair:String(pre.chair||lastChair||''),method:'cash',stage:stageAt(t,(t.sessions||[]).length)[0]},nextValues(nxDef,pre,pre.date)),submit:'حفظ الجلسة',
     onChange:(v,form)=>{nextOnChange(v,form,nxCtx);const el=form.querySelector('#sess-prev');if(el){const a=num(v.amount);el.innerHTML=a>bal?`<b class="bad-t">المبلغ أكبر من المتبقي (${fmt(bal)})</b>`:`المتبقي الآن <b>${fmt(bal)}</b> ← بعد هذه الدفعة <b class="${bal-a<=0?'good-t':''}">${bal-a<=0?'مسدّد بالكامل':fmt(bal-a)+' د.ع'}</b>`}},
     onSubmit:async v=>{const a=money_?num(v.amount):0;if(a>bal+1)fail(`المبلغ أكبر من المتبقي (${fmt(bal)} د.ع)`);nextCheck(v,nxCtx);
-      const doc=clone(t);let pay=null;doc.sessions=(doc.sessions||[]).concat([{id:uid(),date:v.date,doctorId:v.doctorId,chair:v.chair||'',note:v.note,paid:a||0,by:Store.me||null}]);if(v.chair&&!doc.chair)doc.chair=v.chair;
+      const doc=clone(t);let pay=null;doc.sessions=(doc.sessions||[]).concat([{id:uid(),date:v.date,doctorId:v.doctorId,chair:v.chair||'',stage:v.stage||'',note:v.note||(stageOf(t,v.stage)||[])[1]||'',paid:a||0,by:Store.me||null}]);if(v.chair&&!doc.chair)doc.chair=v.chair;
       if(a>0){pay={id:uid(),amount:a,date:v.date,method:v.method,chair:v.chair||'',note:'جلسة '+doc.sessions.length,by:Store.me||null};doc.payments=(doc.payments||[]).concat([pay])}
       if(pay)audit('payment_add',`${t.procedure||'علاج'} · جلسة · ${fmt(pay.amount)} د.ع`,{patientId:t.patientId,clinicId:t.clinicId,col:'treatments',id:t.id});await put('treatments',doc);markApptDone(pre.apptId);const nid=await nextBook(v,nxCtx,t.patientId,`${t.procedure} · جلسة ${doc.sessions.length+1}${pl?' من '+pl:''}`,t.id);
       toast((a>0?`سُجّلت الجلسة ودفعة ${fmt(a)} · المتبقي ${fmt(bal-a)}`:'سُجّلت الجلسة')+(nid?' · وحُجزت الجلسة القادمة':''));
@@ -2134,7 +2135,7 @@ const maxChairs=()=>Math.max(1,...optClinics().map(([id])=>chairCount(id)));
 const chairOpts=n=>Array.from({length:n||maxChairs()},(_,i)=>[String(i+1),'كرسي '+(i+1)]);
 const chairLbl=c=>c?'كرسي '+c:'';
 /* every treatment counts as visits: its recorded sessions, or one visit on its start date when none were recorded */
-const visitsOf=t=>{const ss=(t.sessions||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));return ss.length?ss.map((s,i)=>({date:s.date,doctorId:s.doctorId||t.doctorId,chair:String(s.chair||t.chair||''),note:s.note||'',n:i+1,t,paid:num(s.paid)})):[{date:t.date,doctorId:t.doctorId,chair:String(t.chair||''),note:'',n:1,t,implicit:true,paid:0}]};
+const visitsOf=t=>{const ss=(t.sessions||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||''));return ss.length?ss.map((s,i)=>({id:s.id,stage:s.stage||'',date:s.date,doctorId:s.doctorId||t.doctorId,chair:String(s.chair||t.chair||''),note:s.note||'',n:i+1,t,paid:num(s.paid)})):[{date:t.date,doctorId:t.doctorId,chair:String(t.chair||''),note:'',n:1,t,implicit:true,paid:0}]};
 const payChair=(p,t)=>String(p.chair||((t.sessions||[]).find(s=>s.date===p.date&&s.chair)||{}).chair||t.chair||'');
 PAGES.chairs=()=>{
   const m=state.month;const cids=(state.clinic!=='all'?[state.clinic]:optClinics().map(c=>c[0]));
@@ -3067,10 +3068,10 @@ function editSessionForm(tid,n){
   const t=get('treatments',tid);const x=t&&sessByN(t,n);if(!x)return;const nC=chairCount(t.clinicId);
   formModal({title:`تعديل الجلسة ${x.n}`,sub:`${esc(patientName(t.patientId))} · ${esc(t.procedure)}`,fields:[
     {k:'date',label:'تاريخ الجلسة',type:'date',req:true,half:true},{k:'doctorId',label:'الطبيب',type:'select',opts:optDoctors(),empty:'—',half:true},
-    {k:'chair',label:'الكرسي',type:'select',opts:chairOpts(nC),empty:'—',half:true,show:()=>nC>1},{k:'note',label:'ما تم في الجلسة',half:nC>1,ph:'مثال: تحضير السن وأخذ الطبعة',list:'dl-procs'}],
-    values:{date:x.date,doctorId:x.doctorId||t.doctorId||'',chair:String(x.chair||''),note:x.note||''},submit:'حفظ التعديل',
+    {k:'chair',label:'الكرسي',type:'select',opts:chairOpts(nC),empty:'—',half:true,show:()=>nC>1},{k:'stage',label:'نوع الجلسة (تحدد نقاط الطبيب)',type:'select',opts:stageOpts(t),half:true},{k:'note',label:'ما تم في الجلسة',ph:'مثال: تحضير السن وأخذ الطبعة',list:'dl-procs'}],
+    values:{date:x.date,doctorId:x.doctorId||t.doctorId||'',chair:String(x.chair||''),note:x.note||'',stage:x.stage||(stageAt(t,x.n-1)||[])[0]||''},submit:'حفظ التعديل',
     onSubmit:async v=>{if(v.date>TODAY)fail('تاريخ الجلسة في المستقبل');const doc=clone(t);const arr=doc.sessions||[];const k=arr.findIndex((s,i)=>(x.id?s.id===x.id:i===x._i));if(k<0)fail('تعذّر إيجاد الجلسة');
-      arr[k]=Object.assign({},arr[k],{id:arr[k].id||uid(),date:v.date,doctorId:v.doctorId||'',chair:v.chair||'',note:v.note||''});doc.sessions=arr;await put('treatments',doc);toast('تم تعديل الجلسة')}});
+      arr[k]=Object.assign({},arr[k],{id:arr[k].id||uid(),date:v.date,doctorId:v.doctorId||'',chair:v.chair||'',stage:v.stage||'',note:v.note||''});doc.sessions=arr;await put('treatments',doc);toast('تم تعديل الجلسة')}});
 }
 function editPaymentForm(tid,idx){
   const t=get('treatments',tid);const x=t&&(t.payments||[])[Number(idx)];if(!x)return;const others=tPaid(t)-num(x.amount);
@@ -3536,15 +3537,36 @@ const PT_RULES=[
   ['other','علاج آخر',/.*/,2,false]];
 const ptVal=id=>{const o=((get('settings','app')||{}).points)||{};const r=PT_RULES.find(x=>x[0]===id);const v=o[id];return v!=null&&v!==''&&!isNaN(+v)?+v:(r?r[3]:0)};
 const ptRule=t=>{const s=String((t&&t.procedure)||'');if(t&&t.cat==='filler'&&!/تبييض/.test(s))return PT_RULES.find(x=>x[0]==='filler');if(t&&t.cat==='ortho')return PT_RULES.find(x=>x[0]==='ortho');return PT_RULES.find(r=>r[2].test(s))};
+/* session stages: not every session is equal work. Each profile lists the usual sessions in order with a weight
+   (1 = light, 2 = medium, 3+ = heavy); "extra" is any session beyond the usual ones (dressing, review, adjustment). */
+const PT_STAGES={
+  rct:{list:[['open','فتح وسحب العصب',1],['clean','تنظيف وتوسيع القنوات',2],['obtur','حشو القنوات والإغلاق',2]],extra:['dress','تضميد / مراجعة',0.5]},
+  fixed:{list:[['prep','تحضير السن وأخذ الطبعة',3],['try','تجربة',1],['cem','التركيب النهائي',1.5]],extra:['adj','تعديل / مراجعة',0.5]},
+  implant:{list:[['surg','جراحة وزرع',4],['uncover','كشف الزرعة',1],['imp','أخذ الطبعة',1],['fit','تركيب التاج',1.5]],extra:['rev','مراجعة',0.5]},
+  ortho:{list:[['bond','تركيب التقويم',3]],extra:['adjust','شد / متابعة',1]},
+  denture:{list:[['imp1','طبعة أولية',1],['imp2','طبعة نهائية',1],['bite','تسجيل العضة',1],['try','تجربة الطقم',1],['deliver','تسليم الطقم',1]],extra:['adj','تعديل',0.5]},
+  surg:{list:[['op','العملية',4]],extra:['suture','فك خياطة / مراجعة',0.5]},
+  base:{list:[['main','العلاج',1]],extra:['more','جلسة إضافية',1]}};
+const PT_PROFILE={rct:'rct',rct2:'rct',crown:'fixed',bridge:'fixed',veneer:'fixed',implant:'implant',ortho:'ortho',fulld:'denture',partd:'denture',surg:'surg'};
+const stageProfile=t=>PT_STAGES[PT_PROFILE[(ptRule(t)||[])[0]]]||PT_STAGES.base;
+const stageAt=(t,i)=>{const pr=stageProfile(t);return pr.list[i]||pr.extra};
+const stageOf=(t,key)=>{const pr=stageProfile(t);return pr.list.concat([pr.extra]).find(x=>x[0]===key)||null};
+const stageTag=w=>w>=3?'صعبة':w>=1.5?'متوسطة':'خفيفة';
+const stageOpts=t=>{const pr=stageProfile(t);return pr.list.concat([pr.extra]).map(([k,l,w])=>[k,`${l} · ${stageTag(w)}`])};
+/* each recorded session's share of the case points: its weight over the expected total (done + still planned) */
+function sessShares(t,pts){const vs=visitsOf(t);const pl=num(t.plannedSessions)||0;const N=Math.max(vs.length,pl,1);
+  const w=vs.map((v,i)=>{const st=(v.stage&&stageOf(t,v.stage))||stageAt(t,i);return st[2]});
+  let D=sum(w,x=>x);for(let i=vs.length;i<N;i++)D+=stageAt(t,i)[2];if(D<=0)D=1;
+  return vs.map((v,i)=>({v,share:pts*w[i]/D,stage:(v.stage&&stageOf(t,v.stage))||stageAt(t,i)}))}
 function txPoints(t){if(!t||t.legacy)return {pts:0,rule:null,units:0};const r=ptRule(t);const units=r[4]?Math.max(1,(t.teeth||[]).length):1;return {pts:ptVal(r[0])*units,rule:r,units}}
 function docPoints(rg){return M('dpts:'+rg.join('|')+':'+state.clinic,()=>{const out=new Map();const cOk=t=>state.clinic==='all'||t.clinicId===state.clinic;
   const row=did=>{if(!out.has(did))out.set(did,{pts:0,minus:0,cases:new Set(),by:{},sess:0});return out.get(did)};
-  for(const t of all('treatments')){if(t.legacy||!cOk(t))continue;const {pts,rule}=txPoints(t);if(!pts)continue;const vs=visitsOf(t);const den=Math.max(vs.length,num(t.plannedSessions)||0,1);
-    for(const v of vs){if(!inR(v.date,rg)||!v.doctorId)continue;const r=row(v.doctorId);const share=pts/den;r.pts+=share;r.sess++;r.cases.add(t.id);r.by[rule[1]]=(r.by[rule[1]]||0)+share}
+  for(const t of all('treatments')){if(t.legacy||!cOk(t))continue;const {pts,rule}=txPoints(t);if(!pts)continue;
+    for(const {v,share} of sessShares(t,pts)){if(!inR(v.date,rg)||!v.doctorId)continue;const r=row(v.doctorId);r.pts+=share;r.sess++;r.cases.add(t.id);r.by[rule[1]]=(r.by[rule[1]]||0)+share}
     for(const f of (t.failures||[])){if(!inR(f.date,rg)||!['redo','comp','complaint','refund','other'].includes(f.type))continue;const did=f.doctorId||t.doctorId;if(!did)continue;const r=row(did);r.minus+=pts/2}}
   out.forEach(r=>{r.net=Math.max(0,Math.round((r.pts-r.minus)*10)/10);r.pts=Math.round(r.pts*10)/10;r.minus=Math.round(r.minus*10)/10});return out})}
 function pointsModal(){if(!isAdmin())return noPerm();
-  formModal({title:'نظام نقاط العمل',sub:'كل علاج ياخذ نقاط حسب صعوبته. العلاج اللي بيه «لكل سن» يتضاعف بعدد الأسنان. النقاط تتوزع على جلسات العلاج، وكل جلسة تنحسب للطبيب اللي عالجها.',wide:true,
+  formModal({title:'نظام نقاط العمل',sub:'كل علاج ياخذ نقاط حسب صعوبته، و«لكل سن» يتضاعف بعدد الأسنان. نقاط العلاج تتوزع على جلساته حسب صعوبة كل جلسة: مثلاً بحشوة العصب، فتح وسحب العصب خفيفة (1)، التنظيف والتوسيع (2)، وحشو القنوات (2). وبالتاج، التحضير والطبعة أثقل جلسة (3). وكل جلسة تنحسب للطبيب اللي عالجها.',wide:true,
     fields:PT_RULES.map(([id,l,,d,per])=>({k:'p_'+id,label:`${l}${per?' (لكل سن)':''}`,type:'number',min:0,third:true,ph:String(d)})),
     values:Object.fromEntries(PT_RULES.map(([id])=>['p_'+id,String(ptVal(id))])),submit:'حفظ النقاط',
     onSubmit:async v=>{const o={};PT_RULES.forEach(([id,,,d])=>{const x=num(v['p_'+id]);if(x!==d)o[id]=x});await put('settings',Object.assign(clone(get('settings','app')||{}),{id:'app',points:o}));toast('تم حفظ نظام النقاط','good')}})}
