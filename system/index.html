@@ -84,6 +84,7 @@ small.cur{font-size:.72em;color:var(--ink-3);font-weight:500;margin-inline-start
 .top-title h1{font-size:23px}
 .top-title p{margin:0;font-size:12.5px;color:var(--ink-3)}
 .net-st{display:inline-flex;align-items:center;gap:5px;margin-inline-start:6px;font-size:11.5px;font-weight:600;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}.net-st[hidden]{display:none}
+.pf-pts{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2)}.pf-pts .pf-sec small{font-weight:500;margin-inline-start:6px}
 /* cash report charts */
 :root{--cv-in:#1baf7a;--cv-due:#eb6834;--cm1:#2a78d6;--cm2:#eda100;--cm3:#e87ba4;--cm4:#6250d6;--cm5:#1baf7a}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--cv-in:#199e70;--cv-due:#d95926;--cm1:#3987e5;--cm2:#c98500;--cm3:#d55181;--cm4:#9085e9;--cm5:#199e70}}
@@ -1355,7 +1356,7 @@ const planChip=t=>t.legacy?chip('رصيد سابق من السجلات','accent'
 function groupByCat(ts){const g={};ts.forEach(t=>{(g[txCat(t)]=g[txCat(t)]||[]).push(t)});const keys=TX_CATS.map(c=>c[0]).filter(k=>g[k]);
   return keys.map(k=>{const l=g[k];const rem=sum(l,t=>Math.max(0,tBal(t)));return `<div class="cat-head" style="--cc:${catHue(k)}"><span class="cat-dot"></span><b>${esc(catLbl(k))}</b><span class="muted">${l.length} ${l.length===1?'علاج':'علاجات'}</span>${seeMoney()&&rem>0?`<span class="bad-t">متبقٍ ${fmt(rem)}</span>`:''}</div>`+l.map(treatmentCard).join('')}).join('')}
 function treatmentCard(t){
-  if(!seeMoney())return `<article class="card tx"><div class="tx-h"><div><h4>${catChip(txCat(t))} ${esc(t.procedure)}${(t.teeth||[]).length?`<span class="teeth-tag">${t.teeth.join('، ')}</span>`:''}</h4><p class="muted">${fmtDate(t.date)} · ${esc(docName(t.doctorId))} · ${esc(clinicName(t.clinicId))}</p></div></div>${(()=>{const d=sessDone(t),pl=num(t.plannedSessions);return `<div class="sess-bar">${ic('calendar',15)}<span>${sessLabel(t)}</span>${pl?`<span class="sess-dots">${Array.from({length:Math.min(pl,20)},(_,i)=>`<i class="${i<d?'on':''}"></i>`).join('')}</span>`:''}</div>`})()}${sessionPanel(t)}${t.notes?`<p class="note" style="margin:0">${esc(t.notes)}</p>`:''}<div class="tx-f"><button class="btn primary sm" data-act="addSession" data-tid="${t.id}">${ic('plus',16)} تسجيل جلسة</button><button class="btn sm" data-act="bookNext" data-tid="${t.id}">${ic('calendar',16)} حجز الجلسة القادمة</button>${can('price')&&!t.legacy?`<button class="btn sm" data-act="extendTx" data-tid="${t.id}">${ic('tooth',16)} أسنان / عمل إضافي</button><button class="btn sm ghost danger" data-act="failTx" data-tid="${t.id}">${ic('alert',15)} حالة فاشلة</button>`:''}<button class="btn ghost sm" data-act="editTreatment" data-id="${t.id}">${ic('edit',16)} تعديل</button></div>${extrasHTML(t)}${(t.failures||[]).length?`<div class="tx-extras">${t.failures.map(f=>`<span class="chip ${FAIL_TONE[f.type]||'bad'}" style="cursor:pointer" data-act="failTx" data-tid="${t.id}" data-fid="${f.id}">⚠️ ${esc(FAIL_LBL[f.type]||'')} · ${fmtDate(f.date)}</span>`).join('')}</div>`:''}</article>`;
+  if(!seeMoney())return `<article class="card tx"><div class="tx-h"><div><h4>${catChip(txCat(t))} ${esc(t.procedure)}${(t.teeth||[]).length?`<span class="teeth-tag">${t.teeth.join('، ')}</span>`:''}</h4><p class="muted">${fmtDate(t.date)} · ${esc(docName(t.doctorId))} · ${esc(clinicName(t.clinicId))}</p></div></div>${(()=>{const d=sessDone(t),pl=num(t.plannedSessions);return `<div class="sess-bar">${ic('calendar',15)}<span>${sessLabel(t)}</span>${pl?`<span class="sess-dots">${Array.from({length:Math.min(pl,20)},(_,i)=>`<i class="${i<d?'on':''}"></i>`).join('')}</span>`:''}</div>`})()}${sessionPanel(t)}${t.notes?`<p class="note" style="margin:0">${esc(t.notes)}</p>`:''}<div class="tx-f"><button class="btn primary sm" data-act="addSession" data-tid="${t.id}">${ic('plus',16)} تسجيل جلسة</button><button class="btn sm" data-act="bookNext" data-tid="${t.id}">${ic('calendar',16)} حجز الجلسة القادمة</button>${can('price')&&!t.legacy?`<button class="btn sm" data-act="extendTx" data-tid="${t.id}">${ic('tooth',16)} أسنان / عمل إضافي</button><button class="btn sm ghost danger" data-act="failTx" data-tid="${t.id}">${ic('alert',15)} حالة فاشلة</button>`:''}<button class="btn sm" data-act="txFromTx" data-tid="${t.id}">${ic('plus',16)} علاج جديد ظهر بالجلسة</button><button class="btn ghost sm" data-act="editTreatment" data-id="${t.id}">${ic('edit',16)} تعديل</button></div>${t.fromTx&&get('treatments',t.fromTx)?`<p class="muted" style="margin:0;font-size:12.5px">${ic('tooth',13)} ظهر أثناء علاج: ${esc(get('treatments',t.fromTx).procedure||'')}</p>`:''}${extrasHTML(t)}${(t.failures||[]).length?`<div class="tx-extras">${t.failures.map(f=>`<span class="chip ${FAIL_TONE[f.type]||'bad'}" style="cursor:pointer" data-act="failTx" data-tid="${t.id}" data-fid="${f.id}">⚠️ ${esc(FAIL_LBL[f.type]||'')} · ${fmtDate(f.date)}</span>`).join('')}</div>`:''}</article>`;
   const tot=tTotal(t),pd=tPaid(t),bal=tot-pd,sch=schedStatus(t),p=get('patients',t.patientId)||{};
   return `<article class="card tx"><div class="tx-h"><div><h4>${catChip(txCat(t))} ${esc(t.procedure)}${(t.teeth||[]).length?`<span class="teeth-tag">${t.teeth.join('، ')}</span>`:''}</h4><p class="muted">${fmtDate(t.date)} · ${esc(docName(t.doctorId))} · ${esc(clinicName(t.clinicId))}</p></div><div class="tx-meta">${planChip(t)}${bal<=0&&tot>0?chip('مسدّد بالكامل','good'):''}</div></div>
   <div class="tx-nums"><div><span>الكلفة</span><b>${money(tot)}</b>${num(t.discount)?`<small>بعد خصم ${fmt(t.discount)}</small>`:''}</div><div><span>المدفوع</span><b class="good-t">${money(pd)}</b></div><div><span>المتبقي</span><b class="${bal>0?'bad-t':''}">${money(bal)}</b></div></div>
@@ -1363,7 +1364,7 @@ function treatmentCard(t){
   <div class="progress" role="img" aria-label="نسبة السداد ${pctOf(pd,tot)}%"><i style="width:${Math.min(100,pctOf(pd,tot))}%"></i></div>
   ${sch.length?`<div class="sched">${num(t.down)?`<div class="inst ${pd>=num(t.down)?'paid':'open'}"><span class="n">م</span><span>المقدّمة</span><b>${fmt(t.down)}</b><em>${pd>=num(t.down)?'مدفوعة':'غير مدفوعة'}</em></div>`:''}${sch.map((x,i)=>`<div class="inst ${x.state}"><span class="n">${i+1}</span><span>${fmtDate(x.due)}</span><b>${fmt(x.amount)}</b><em>${INST_ST[x.state]}${x.state!=='paid'&&x.paid?` · دُفع ${fmt(x.paid)}`:''}</em></div>`).join('')}</div>`:''}
   ${t.notes?`<p class="note" style="margin:0">${esc(t.notes)}</p>`:''}
-  <div class="tx-f"><button class="btn sm" data-act="addSession" data-tid="${t.id}">${ic('plus',16)} تسجيل جلسة</button><button class="btn sm" data-act="bookNext" data-tid="${t.id}">${ic('calendar',16)} الجلسة القادمة</button>${bal>0&&can('pay')?`<button class="btn primary sm" data-act="addPayment" data-tid="${t.id}">${ic('cash',16)} تسديد</button>`:''}${can('price')&&!t.legacy?`<button class="btn sm" data-act="extendTx" data-tid="${t.id}">${ic('tooth',16)} أسنان / عمل إضافي</button><button class="btn sm ghost danger" data-act="failTx" data-tid="${t.id}">${ic('alert',15)} حالة فاشلة</button>`:''}<button class="btn ghost sm" data-act="editTreatment" data-id="${t.id}">${ic('edit',16)} تعديل</button></div>${extrasHTML(t)}</article>`;
+  <div class="tx-f"><button class="btn sm" data-act="addSession" data-tid="${t.id}">${ic('plus',16)} تسجيل جلسة</button><button class="btn sm" data-act="bookNext" data-tid="${t.id}">${ic('calendar',16)} الجلسة القادمة</button>${bal>0&&can('pay')?`<button class="btn primary sm" data-act="addPayment" data-tid="${t.id}">${ic('cash',16)} تسديد</button>`:''}${can('price')&&!t.legacy?`<button class="btn sm" data-act="extendTx" data-tid="${t.id}">${ic('tooth',16)} أسنان / عمل إضافي</button><button class="btn sm ghost danger" data-act="failTx" data-tid="${t.id}">${ic('alert',15)} حالة فاشلة</button>`:''}<button class="btn sm" data-act="txFromTx" data-tid="${t.id}">${ic('plus',16)} علاج جديد ظهر بالجلسة</button><button class="btn ghost sm" data-act="editTreatment" data-id="${t.id}">${ic('edit',16)} تعديل</button></div>${t.fromTx&&get('treatments',t.fromTx)?`<p class="muted" style="margin:0;font-size:12.5px">${ic('tooth',13)} ظهر أثناء علاج: ${esc(get('treatments',t.fromTx).procedure||'')}</p>`:''}${extrasHTML(t)}</article>`;
 }
 
 PAGES.accounts=()=>{
@@ -2116,8 +2117,9 @@ function sessionForm(tid,pre){
   const nxCtx=v=>({clinicId:t.clinicId,doctorId:v.doctorId,chair:v.chair});const pl=num(t.plannedSessions);const nxDef=pl>sessDone(t)+1&&!nextApptFor(t.patientId,addDays(TODAY,1));
   formModal({title:'تسجيل جلسة',sub:`${esc(patientName(t.patientId))} · الجلسة ${sessDone(t)+1}${num(t.plannedSessions)?' من '+num(t.plannedSessions):''}`,fields:[
     {k:'sum',type:'html',html:txSummaryHTML(t)},
-    {k:'date',label:'تاريخ الجلسة',type:'date',req:true,half:nC<2,third:nC>1},{k:'doctorId',label:'الطبيب',type:'select',opts:optDoctors(),empty:'—',half:nC<2,third:nC>1},{k:'chair',label:'الكرسي',type:'select',opts:chairOpts(nC),empty:'—',third:true,show:()=>nC>1},
+    {k:'date',label:'تاريخ الجلسة',type:'date',req:true,half:nC<2,third:nC>1},{k:'doctorId',label:'الطبيب اللي عالج هذه الجلسة',type:'select',opts:optDoctors(),empty:'—',req:true,half:nC<2,third:nC>1},{k:'chair',label:'الكرسي',type:'select',opts:chairOpts(nC),empty:'—',third:true,show:()=>nC>1},
     {k:'note',label:'ما تم في الجلسة',ph:'مثال: تحضير السن وأخذ الطبعة',list:'dl-procs'},
+    {k:'addTx',label:'ظهر علاج جديد بهذه الجلسة (مثلاً قلع أو حشوة ثانية): أفتحله علاج بعد الحفظ',type:'checkbox'},
     {k:'amount',label:'المبلغ المدفوع في هذه الجلسة (اختياري)',type:'money',half:true,show:()=>money_&&bal>0&&can('pay')},Object.assign(fillField('amount',[[`كامل المتبقي (${fmt(bal)})`,bal]].concat((()=>{if(t.plan!=='installments')return [];const nx=schedStatus(t).find(x=>x.state!=='paid');const d=nx?Math.min(bal,num(nx.amount)-nx.paid):0;return d>0&&d!==bal?[[`القسط المستحق (${fmt(d)})`,d]]:[]})())),{show:()=>money_&&bal>0&&can('pay')}),{k:'method',label:'طريقة الدفع',type:'select',opts:PAY_METHODS,half:true,show:v=>money_&&num(v.amount)>0},
     {k:'prev',type:'html',html:'<div class="plan-preview" id="sess-prev"></div>',show:v=>money_&&num(v.amount)>0}].concat(nextFields(nxCtx,nxDef,t.patientId)),
     values:Object.assign({date:pre.date||TODAY,doctorId:pre.doctorId||t.doctorId||defaultDoctor(),chair:String(pre.chair||lastChair||''),method:'cash'},nextValues(nxDef,pre,pre.date)),submit:'حفظ الجلسة',
@@ -2127,7 +2129,8 @@ function sessionForm(tid,pre){
       if(a>0){pay={id:uid(),amount:a,date:v.date,method:v.method,chair:v.chair||'',note:'جلسة '+doc.sessions.length,by:Store.me||null};doc.payments=(doc.payments||[]).concat([pay])}
       if(pay)audit('payment_add',`${t.procedure||'علاج'} · جلسة · ${fmt(pay.amount)} د.ع`,{patientId:t.patientId,clinicId:t.clinicId,col:'treatments',id:t.id});await put('treatments',doc);markApptDone(pre.apptId);const nid=await nextBook(v,nxCtx,t.patientId,`${t.procedure} · جلسة ${doc.sessions.length+1}${pl?' من '+pl:''}`,t.id);
       toast((a>0?`سُجّلت الجلسة ودفعة ${fmt(a)} · المتبقي ${fmt(bal-a)}`:'سُجّلت الجلسة')+(nid?' · وحُجزت الجلسة القادمة':''));
-      if(pay)setTimeout(()=>receiptModal(t.id,pay.id),60);else if(nid)setTimeout(()=>bookedModal(nid),60)}});
+      if(v.addTx)setTimeout(()=>treatmentForm(null,t.patientId,{clinicId:t.clinicId,doctorId:v.doctorId,chair:v.chair||'',fromTx:t.id}),80);
+      else if(pay)setTimeout(()=>receiptModal(t.id,pay.id),60);else if(nid)setTimeout(()=>bookedModal(nid),60)}});
 }
 function receiptText(t,pay){const p=get('patients',t.patientId)||{};const all_=all('treatments').filter(x=>x.patientId===t.patientId&&tBal(x)>0&&x.id!==t.id);
   return `وصل استلام · ${clinicName(t.clinicId)}\nالمريض: ${p.name||''}\nالعلاج: ${t.procedure}${(t.teeth||[]).length?' ('+t.teeth.join('، ')+')':''}\n${sessLabel(t)}\nالمبلغ المستلم: ${fmt(pay.amount)} دينار بتاريخ ${fmtDate(pay.date)}\nالمدفوع حتى الآن: ${fmt(tPaid(t))} من ${fmt(tTotal(t))} دينار\nالمتبقي: ${fmt(tBal(t))} دينار${(()=>{const na=nextApptFor(t.patientId);return na?`\nموعدكم القادم: ${dayLabel(na.date)} الساعة ${t12(na.time)}${na.doctorId?' مع '+docName(na.doctorId):''}`:''})()}${all_.length?`\nعلاجات أخرى متبقية: ${fmt(sum(all_,tBal))} دينار`:''}\nشكراً لثقتكم.\n${siteLine}\n${SIGN}`}
@@ -2137,7 +2140,7 @@ function receiptModal(tid,payId){const t=get('treatments',tid);if(!t)return;cons
   <div class="m-foot"><button class="btn ghost" data-act="closeModal">إغلاق</button><span class="sp"></span><button class="btn" id="rc-copy">نسخ الوصل</button><button class="btn" data-act="printRc" data-pid="${t.patientId}" data-tid="${t.id}" data-pay="${esc(pay.id||'')}">${ic('receipt',16)} طباعة الوصل</button>${p.phone?`<a class="btn primary" href="${waLink(p.phone,text)}" target="_blank" rel="noopener" ${(()=>{const na=nextApptFor(t.patientId);return na&&!na.bookSent?`data-remsent="${na.id}" data-remk="booking"`:''})()}>${ic('chat',16)} إرسال الوصل للمريض</a>`:''}</div>`);
   $('#rc-copy').onclick=()=>navigator.clipboard.writeText(text).then(()=>toast('تم نسخ الوصل')).catch(()=>toast('تعذّر النسخ','warn'))}
 ACTIONS.fillAmt=(d,el)=>{const inp=el.closest('form')?.querySelector('#f_'+d.f);if(inp){inp.value=fmt(num(d.v));inp.dispatchEvent(new Event('input',{bubbles:true}));inp.focus()}};
-ACTIONS.addSession=d=>sessionForm(d.tid);ACTIONS.receipt=d=>receiptModal(d.tid,d.pid);
+ACTIONS.addSession=d=>sessionForm(d.tid);ACTIONS.txFromTx=d=>{const t=get('treatments',d.tid);if(!t)return;const last=(t.sessions||[]).slice(-1)[0]||{};treatmentForm(null,t.patientId,{clinicId:t.clinicId,doctorId:(last.date===TODAY&&last.doctorId)||t.doctorId,chair:String(last.chair||t.chair||''),fromTx:t.id})};ACTIONS.receipt=d=>receiptModal(d.tid,d.pid);
 /* ---------- Chairs: each clinic has numbered chairs; sessions, appointments and payments carry the chair ---------- */
 const chairCount=cid=>Math.max(1,Math.round(num(get('clinics',cid)?.chairs)||1));
 const maxChairs=()=>Math.max(1,...optClinics().map(([id])=>chairCount(id)));
@@ -3519,7 +3522,47 @@ ACTIONS.failExport=async()=>{const rg=drRange();const q=v=>`"${String(v??'').rep
   await saveFile(`الحالات-الفاشلة-${rg[0]}-${rg[1]}.csv`,'﻿'+L.join('\n'),'text/csv')};
 
 /* ---------- Doctor performance: scorecard, achievements, fillers, rating ---------- */
-function perfData(rg){return M('perf:'+rg.join('|')+':'+state.clinic,()=>{
+/* ---------- Work points: every treatment earns points by difficulty, shared between the doctors who did its sessions ----------
+   Hard cases (surgery, implants, root canals) score high, simple ones (check-up, cleaning) low.
+   Per-tooth work counts each tooth. Points are spread over the treatment's sessions: max(planned, done),
+   so an unfinished treatment earns only the sessions done so far. A serious failure takes back half the case's points. */
+const PT_RULES=[
+  ['implant','زراعة',/زراع|implant/i,12,true],
+  ['surg','قلع جراحي / ضرس عقل',/جراح|عقل|مطمور/,8,true],
+  ['rct2','إعادة علاج عصب',/إعادة\s*(حشوة|علاج)\s*عصب|اعادة\s*(حشوة|علاج)\s*عصب/,9,true],
+  ['rct','حشوة عصب / علاج جذور',/عصب|جذور|لب/,7,true],
+  ['ortho','تقويم',/تقويم/,10,false],
+  ['fulld','طقم كامل',/طقم\s*كامل/,9,false],
+  ['partd','طقم جزئي / متحرك',/طقم/,6,false],
+  ['veneer','فينير / قشور',/فينير|قشور|لومينير|veneer/i,6,true],
+  ['bridge','جسر',/جسر/,5,true],
+  ['crown','تاج / تلبيس',/تاج|تلبيس|زيركون|بورسلين|crown/i,5,true],
+  ['gum','علاج لثة',/لثة|تقليح عميق/,4,false],
+  ['white','تبييض',/تبييض/,4,false],
+  ['filler','فيلر / بوتوكس / تجميل',/فيلر|بوتوكس|filler|botox/i,4,false],
+  ['fillc','حشوة تجميلية أمامية',/حشوة.*(تجميلية|أمامية)/,4,true],
+  ['fill','حشوة',/حشو|كومبوزيت|أملغم|ملغم|GIC|ضوئية/i,3,true],
+  ['ext','قلع بسيط',/قلع/,3,true],
+  ['kids','أسنان أطفال / حشوة مؤقتة',/أطفال|مؤقت|فلورايد/,2,true],
+  ['clean','تنظيف وتلميع',/تنظيف|تلميع|تقليح/,2,false],
+  ['exam','فحص / استشارة / أشعة',/فحص|استشار|أشعة|اشعة|مراجعة/,1,false],
+  ['other','علاج آخر',/.*/,2,false]];
+const ptVal=id=>{const o=((get('settings','app')||{}).points)||{};const r=PT_RULES.find(x=>x[0]===id);const v=o[id];return v!=null&&v!==''&&!isNaN(+v)?+v:(r?r[3]:0)};
+const ptRule=t=>{const s=String((t&&t.procedure)||'');if(t&&t.cat==='filler'&&!/تبييض/.test(s))return PT_RULES.find(x=>x[0]==='filler');if(t&&t.cat==='ortho')return PT_RULES.find(x=>x[0]==='ortho');return PT_RULES.find(r=>r[2].test(s))};
+function txPoints(t){if(!t||t.legacy)return {pts:0,rule:null,units:0};const r=ptRule(t);const units=r[4]?Math.max(1,(t.teeth||[]).length):1;return {pts:ptVal(r[0])*units,rule:r,units}}
+function docPoints(rg){return M('dpts:'+rg.join('|')+':'+state.clinic,()=>{const out=new Map();const cOk=t=>state.clinic==='all'||t.clinicId===state.clinic;
+  const row=did=>{if(!out.has(did))out.set(did,{pts:0,minus:0,cases:new Set(),by:{},sess:0});return out.get(did)};
+  for(const t of all('treatments')){if(t.legacy||!cOk(t))continue;const {pts,rule}=txPoints(t);if(!pts)continue;const vs=visitsOf(t);const den=Math.max(vs.length,num(t.plannedSessions)||0,1);
+    for(const v of vs){if(!inR(v.date,rg)||!v.doctorId)continue;const r=row(v.doctorId);const share=pts/den;r.pts+=share;r.sess++;r.cases.add(t.id);r.by[rule[1]]=(r.by[rule[1]]||0)+share}
+    for(const f of (t.failures||[])){if(!inR(f.date,rg)||!['redo','comp','complaint','refund','other'].includes(f.type))continue;const did=f.doctorId||t.doctorId;if(!did)continue;const r=row(did);r.minus+=pts/2}}
+  out.forEach(r=>{r.net=Math.max(0,Math.round((r.pts-r.minus)*10)/10);r.pts=Math.round(r.pts*10)/10;r.minus=Math.round(r.minus*10)/10});return out})}
+function pointsModal(){if(!isAdmin())return noPerm();
+  formModal({title:'نظام نقاط العمل',sub:'كل علاج ياخذ نقاط حسب صعوبته. العلاج اللي بيه «لكل سن» يتضاعف بعدد الأسنان. النقاط تتوزع على جلسات العلاج، وكل جلسة تنحسب للطبيب اللي عالجها.',wide:true,
+    fields:PT_RULES.map(([id,l,,d,per])=>({k:'p_'+id,label:`${l}${per?' (لكل سن)':''}`,type:'number',min:0,third:true,ph:String(d)})),
+    values:Object.fromEntries(PT_RULES.map(([id])=>['p_'+id,String(ptVal(id))])),submit:'حفظ النقاط',
+    onSubmit:async v=>{const o={};PT_RULES.forEach(([id,,,d])=>{const x=num(v['p_'+id]);if(x!==d)o[id]=x});await put('settings',Object.assign(clone(get('settings','app')||{}),{id:'app',points:o}));toast('تم حفظ نظام النقاط','good')}})}
+ACTIONS.pointsCfg=()=>pointsModal();
+function perfData(rg){return M('perf:'+rg.join('|')+':'+state.clinic+':'+(state.perfSort||''),()=>{
   const base=drData(rg).filter(r=>r.visits.length||r.tx.length||r.pays.length||r.appts.length);
   const rows=base.map(r=>{const d=r.d;const cats={};TX_CATS.forEach(([k])=>cats[k]={tx:0,value:0,collected:0,pts:new Set(),qty:0,procs:{}});
     r.tx.forEach(t=>{const c=cats[txCat(t)];c.tx++;c.value+=tTotal(t);c.pts.add(t.patientId);c.qty+=num(t.qty);const k=(t.procedure||'—').trim();c.procs[k]=(c.procs[k]||0)+1});
@@ -3535,12 +3578,13 @@ function perfData(rg){return M('perf:'+rg.join('|')+':'+state.clinic,()=>{
     const days=new Set(r.visits.map(v=>v.date)).size;
     return Object.assign({},r,{cats,fillers:f,returning,att,nos,attRate,collRate,owed,reviews,stars,workDays:days,avgPerPatient:r.pts.size?r.collected/r.pts.size:0,newPts:[...r.pts].filter(pid=>{const p=get('patients',pid);return p&&inR((p.createdAt||'').slice(0,10),rg)}).length})});
   const mx=k=>Math.max(1,...rows.map(r=>typeof r[k]==='number'?r[k]:r[k].length||r[k].size||0));
-  const mxColl=mx('collected'),mxPts=mx('pts'),mxVis=Math.max(1,...rows.map(r=>r.visits.length));
+  const dp=docPoints(rg);rows.forEach(r=>{const x=dp.get(r.d.id)||{pts:0,minus:0,net:0,cases:new Set(),by:{},sess:0};r.wp=x});
+  const mxColl=mx('collected'),mxPts=mx('pts'),mxVis=Math.max(1,...rows.map(r=>r.visits.length)),mxWP=Math.max(1,...rows.map(r=>r.wp.net));
   rows.forEach(r=>{
     const prod=r.collected/mxColl;const reach=r.pts.size/mxPts;const act=r.visits.length/mxVis;
     const ret=r.pts.size?r.returning/r.pts.size:0;
     r.fails=failsOf(rg,r.d.id);r.failSerious=failSerious(r.fails).length;const failRate=r.failSerious/Math.max(1,r.tx.length+Math.round(r.visits.length/3));
-    const parts=[['التحصيل',r.collRate==null?0.6:r.collRate,20],['الحضور',r.attRate==null?0.7:r.attRate,15],['الإنتاجية',prod,25],['النشاط',(reach+act)/2,15],['عودة المرضى',Math.min(1,ret*1.5),15],['الجودة (قلة الحالات الفاشلة)',Math.max(0,1-failRate*3),10]];
+    const parts=[['نقاط العمل (صعوبة الحالات)',r.wp.net/mxWP,30],['التحصيل',r.collRate==null?0.6:r.collRate,15],['الحضور',r.attRate==null?0.7:r.attRate,15],['النشاط',(reach+act)/2,15],['عودة المرضى',Math.min(1,ret*1.5),15],['الجودة (قلة الحالات الفاشلة)',Math.max(0,1-failRate*3),10]];
     r.parts=parts;r.score=Math.round(sum(parts,p=>p[1]*p[2]));
     if(r.stars!=null)r.final=Math.round(r.score*.8+(r.stars/5)*100*.2);else r.final=r.score});
   /* achievements */
@@ -3553,11 +3597,15 @@ function perfData(rg){return M('perf:'+rg.join('|')+':'+state.clinic,()=>{
     if(r.stars!=null&&r.stars>=4.5&&r.reviews.length>=2)a.push(['⭐','تقييم إدارة ممتاز']);
     if(r.visits.length>=20)a.push(['🔥','نشاط عالٍ']);if(r.nos===0&&r.att>=5)a.push(['🎯','بدون غياب مرضى']);if(r.failSerious===0&&r.tx.length>=5)a.push(['🛡️','بدون حالات فاشلة']);
     r.badges=a});
-  rows.sort((a,b)=>b.final-a.final||b.collected-a.collected);rows.forEach((r,i)=>r.rank=i+1);
+  const bwp=top(r=>r.wp.net);rows.forEach(r=>{if(bwp===r.d.id&&rows.length>1)r.badges.unshift(['🦷','الأعلى نقاط عمل'])});
+  if(state.perfSort==='pts')rows.sort((a,b)=>b.wp.net-a.wp.net||b.final-a.final);else rows.sort((a,b)=>b.final-a.final||b.collected-a.collected);rows.forEach((r,i)=>r.rank=i+1);
   return rows})}
+function perfPointsBox(r){const w=r.wp;const by=Object.entries(w.by).sort((a,b)=>b[1]-a[1]);const mx=Math.max(1,...by.map(x=>x[1]));
+  return `<div class="pf-pts"><div class="pf-sec">🦷 نقاط العمل <span class="chip accent">${fmtPts(w.net)}</span>${w.minus?`<small class="bad-t">بعد خصم ${fmtPts(w.minus)} للحالات الفاشلة</small>`:''}</div>${by.length?`<div class="pf-cats">${by.slice(0,6).map(([l,v])=>`<div class="pf-cat"><span>${esc(l)}</span><div class="bar"><i style="width:${pctOf(v,mx)}%"></i></div><b>${fmtPts(v)}</b></div>`).join('')}</div><p class="muted" style="margin:0;font-size:12px">${w.cases.size} علاج · ${w.sess} جلسة بهذه الفترة</p>`:'<p class="muted" style="margin:0;font-size:13px">لا جلسات بهذه الفترة</p>'}</div>`}
+const fmtPts=v=>(Math.round(v*10)/10).toLocaleString('en-US');
 function perfFailBox(r,rg){const f=r.fails||[];const ser=failSerious(f);const cnt=k=>f.filter(x=>x.kind===k).length;
   return `<div class="pf-failbox ${ser.length?'has':''}"><div class="pf-sec">⚠️ الحالات الفاشلة <span class="chip ${ser.length?'bad':'good'}">${f.length}</span></div>${f.length?`<div class="pf-procs">${Object.entries(f.reduce((o,x)=>(o[x.kind]=(o[x.kind]||0)+1,o),{})).map(([k,n])=>`<span class="chip ${FAIL_TONE[k]||''}">${esc(FAIL_LBL[k])} · ${n}</span>`).join('')}</div><div class="list">${f.slice(0,3).map(failRow).join('')}</div>${f.length>3?`<button class="btn sm ghost" data-act="failOpenDoc" data-v="${r.d.id}">عرض كل الحالات (${f.length})</button>`:''}${seeMoney()&&sum(f,x=>x.cost)?`<p class="muted" style="margin:0;font-size:12.5px">كلفة الإصلاح ${fmt(sum(f,x=>x.cost))} د.ع (على الطبيب ${fmt(sum(f.filter(x=>x.bearer==='doctor'),x=>x.cost))})</p>`:''}`:'<p class="muted" style="margin:0;font-size:13px">لا حالات فاشلة بهذه الفترة ✓</p>'}</div>`}
-ACTIONS.failOpenDoc=d=>{state.fdoc=d.v;state.fkind='all';go('failed')};
+ACTIONS.perfSort=d=>{state.perfSort=d.v;render()};ACTIONS.failOpenDoc=d=>{state.fdoc=d.v;state.fkind='all';go('failed')};
 const gradeOf=s=>s>=85?['ممتاز','good']:s>=70?['جيد جداً','good']:s>=55?['جيد','info']:s>=40?['متوسط','warn']:['يحتاج متابعة','bad'];
 const pc=v=>v==null?'—':Math.round(v*100)+'%';
 const ring=(s,c)=>`<div class="pf-ring" style="--p:${s};--c:var(--${c==='bad'?'bad':c==='warn'?'warn':c==='info'?'info':'good'},#15803d)"><b>${s}</b><small>/100</small></div>`;
@@ -3570,6 +3618,7 @@ function perfCard(r,rg){const d=r.d;const [gl,gc]=gradeOf(r.final);const f=r.fil
   ${r.badges.length?`<div class="pf-badges">${r.badges.map(([e,t])=>`<span class="pf-badge">${e} ${esc(t)}</span>`).join('')}</div>`:''}
   <div class="pf-nums"><div><span>المحصّل</span><b>${fmt(r.collected)}</b></div><div><span>قيمة الأعمال</span><b>${fmt(r.value)}</b></div><div><span>مرضى</span><b>${r.pts.size}</b><small>${r.newPts} جديد</small></div><div><span>جلسات</span><b>${r.visits.length}</b><small>${r.workDays} يوم عمل</small></div><div><span>علاجات جديدة</span><b>${r.tx.length}</b></div><div><span>معدل لكل مريض</span><b>${fmt(r.avgPerPatient)}</b></div></div>
   <div class="pf-rates"><div><span>الحضور</span><div class="bar"><i style="width:${Math.round((r.attRate||0)*100)}%"></i></div><b>${pc(r.attRate)}</b><small>${r.att} حضر · ${r.nos} لم يحضر</small></div><div><span>التحصيل</span><div class="bar"><i style="width:${Math.round((r.collRate||0)*100)}%"></i></div><b>${pc(r.collRate)}</b><small>متبقٍ ${fmt(r.owed)}</small></div><div><span>عودة المرضى</span><div class="bar"><i style="width:${r.pts.size?Math.round(r.returning/r.pts.size*100):0}%"></i></div><b>${r.pts.size?Math.round(r.returning/r.pts.size*100)+'%':'—'}</b><small>${r.returning} راجعوا أكثر من مرة</small></div></div>
+  ${perfPointsBox(r)}
   ${catRows.length?`<div class="pf-sec">${ic('tooth',15)} المنجزات حسب القسم</div><div class="pf-cats">${catRows.map(({k,l,c})=>`<div class="pf-cat" style="--cc:${catHue(k)}"><span><i class="cat-dot"></i>${esc(l)}</span><div class="bar"><i style="width:${pctOf(c.collected,mxv)}%;background:var(--cc)"></i></div><b>${c.tx}</b><small>${c.pts.size} مريض · ${fmt(c.collected)}</small></div>`).join('')}</div>`:''}
   <div class="pf-fill ${f.tx?'':'empty'}"><div class="pf-sec">💉 الفيلر والتجميل</div>${f.tx?`<div class="pf-fnums"><div><b>${f.tx}</b><span>حالة</span></div><div><b>${f.pts.size}</b><span>مريض</span></div>${f.qty?`<div><b>${f.qty}</b><span>ملل / حقنة</span></div>`:''}<div><b>${fmt(f.value)}</b><span>قيمة الأعمال</span></div><div><b>${fmt(f.collected)}</b><span>المحصّل</span></div></div>${topProcs.length?`<div class="pf-procs">${topProcs.map(([k,n])=>`<span class="chip">${esc(k)} · ${n}</span>`).join('')}</div>`:''}`:'<p class="muted" style="margin:0;font-size:13px">لا حالات فيلر بهذه الفترة</p>'}</div>
   ${perfFailBox(r,rg)}
@@ -3584,11 +3633,11 @@ PAGES.perf=()=>{
   if(!rows.length)return secHead('أداء الأطباء',rangeLabel(rg))+head+`<section class="card">${empty('لا نشاط بهذه الفترة','جرّب فترة أطول من الأزرار فوق')}</section>`;
   const best=(f)=>rows.slice().sort((a,b)=>f(b)-f(a))[0];const tot=k=>sum(rows,r=>typeof r[k]==='number'?r[k]:r[k].length);
   const fillTot=sum(rows,r=>r.fillers.tx);const bc=best(r=>r.collected),bs=best(r=>r.final);
-  return `${secHead('أداء الأطباء',rangeLabel(rg),`<button class="btn" data-act="drExport">${ic('down',16)} تصدير Excel</button>`)}${head}
+  return `${secHead('أداء الأطباء',rangeLabel(rg),`${isAdmin()?`<button class="btn" data-act="pointsCfg">${ic('edit',16)} نظام النقاط</button>`:''}<button class="btn" data-act="drExport">${ic('down',16)} تصدير Excel</button>`)}${head}
   <div class="kpis">${kpi('إجمالي المحصّل',money(tot('collected')),rows.length+' طبيب نشط','hl')}${kpi('الأعلى تحصيلاً','د. '+esc(bc.d.name),fmt(bc.collected)+' د.ع')}${kpi('الأعلى تقييماً','د. '+esc(bs.d.name),bs.final+'/100 · '+gradeOf(bs.final)[0])}${kpi('حالات الفيلر',String(fillTot),fillTot?'بعدد '+rows.filter(r=>r.fillers.tx).length+' طبيب':'لا حالات')}</div>
-  <section class="card"><div class="card-h"><h3>الترتيب</h3><span class="muted" style="font-size:12.5px">حسب التقييم العام</span></div><div class="tbl-wrap"><table class="tbl mini keep pf-rank-tbl"><thead><tr><th>#</th><th>الطبيب</th><th class="n">التقييم</th><th class="n">المحصّل</th><th class="n">مرضى</th><th class="n">جلسات</th><th class="n">الحضور</th><th class="n">فيلر</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.rank}</td><td><b>د. ${esc(r.d.name)}</b></td><td class="n">${chip(r.final+' · '+gradeOf(r.final)[0],gradeOf(r.final)[1])}</td><td class="n">${fmt(r.collected)}</td><td class="n">${r.pts.size}</td><td class="n">${r.visits.length}</td><td class="n">${pc(r.attRate)}</td><td class="n">${r.fillers.tx}</td></tr>`).join('')}</tbody></table></div></section>
+  <section class="card"><div class="card-h"><h3>الترتيب</h3>${seg('perfSort',state.perfSort==='pts'?'pts':'score',[['score','حسب التقييم العام'],['pts','حسب نقاط العمل']])}</div><div class="tbl-wrap"><table class="tbl mini keep pf-rank-tbl"><thead><tr><th>#</th><th>الطبيب</th><th class="n">التقييم</th><th class="n">نقاط العمل</th><th class="n">المحصّل</th><th class="n">مرضى</th><th class="n">جلسات</th><th class="n">الحضور</th><th class="n">فيلر</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${r.rank}</td><td><b>د. ${esc(r.d.name)}</b></td><td class="n">${chip(r.final+' · '+gradeOf(r.final)[0],gradeOf(r.final)[1])}</td><td class="n"><b>${fmtPts(r.wp.net)}</b></td><td class="n">${fmt(r.collected)}</td><td class="n">${r.pts.size}</td><td class="n">${r.visits.length}</td><td class="n">${pc(r.attRate)}</td><td class="n">${r.fillers.tx}</td></tr>`).join('')}</tbody></table></div></section>
   <div class="pf-list">${rows.map(r=>perfCard(r,rg)).join('')}</div>
-  <p class="muted" style="font-size:12.5px;margin:0">التقييم محسوب آلياً من: التحصيل 20% · الحضور 15% · الإنتاجية 25% · النشاط 15% · عودة المرضى 15% · الجودة 10% (تنزل مع الحالات الفاشلة). إذا أضفت تقييم الإدارة يدخل بنسبة 20%.</p>`};
+  <p class="muted" style="font-size:12.5px;margin:0">التقييم محسوب آلياً من: نقاط العمل 30% (حسب صعوبة الحالات) · التحصيل 15% · الحضور 15% · النشاط 15% · عودة المرضى 15% · الجودة 10% (تنزل مع الحالات الفاشلة). إذا أضفت تقييم الإدارة يدخل بنسبة 20%. نقاط كل نوع علاج تشوفها وتغيّرها من زر «نظام النقاط».</p>`};
 ACTIONS.perfRate=d=>{const doc=get('doctors',d.id);if(!doc)return;
   formModal({title:'تقييم د. '+doc.name,sub:'تقييم الإدارة يدخل بنسبة 20% من التقييم العام',fields:[{k:'stars',label:'التقييم',type:'select',opts:[['5','⭐⭐⭐⭐⭐ ممتاز'],['4','⭐⭐⭐⭐ جيد جداً'],['3','⭐⭐⭐ جيد'],['2','⭐⭐ ضعيف'],['1','⭐ سيئ']],req:true},{k:'note',label:'ملاحظة (اختياري)',type:'textarea',rows:2,ph:'مثال: التزام ممتاز ورضا المرضى عالٍ'}],values:{stars:'5'},submit:'حفظ التقييم',
     onSubmit:async v=>{const n=clone(doc);n.reviews=(n.reviews||[]).concat([{date:TODAY,stars:Number(v.stars),note:v.note||'',by:Store.me||null}]).slice(-24);await put('doctors',n);toast('تم حفظ التقييم')}})};
@@ -3948,9 +3997,9 @@ function treatmentForm(t,pid,pre){
       else el.textContent=tot>0&&num(t.discount)?`الصافي بعد الخصم: ${fmt(tot)} د.ع`:''},
     danger:isNew||!isAdmin()?null:{label:'حذف العلاج',onClick:()=>confirmBox('سيُحذف هذا العلاج مع كل دفعاته.',async()=>{await del('treatments',t.id);audit('treatment_delete',`${t.procedure||'علاج'} · كلفة ${fmt(tTotal(t))} · مدفوع ${fmt(tPaid(t))}`,{patientId:t.patientId,clinicId:t.clinicId,col:'treatments',id:t.id});toast('تم الحذف')})},
     onSubmit:async v=>{if(isNew)nextCheck(v,nxCtx);const nxProc=()=>`${v.procedure} · الجلسة القادمة`;
-      if(!money_){const doc=Object.assign(isNew?{payments:[],schedule:[],fee:0,discount:0,plan:'partial',down:0}:clone(t),{patientId:pid,procedure:v.procedure,cat:v.cat||guessCat(v.procedure),clinicId:v.clinicId,doctorId:v.doctorId,chair:v.chair||'',date:v.date,teeth:v.teeth,notes:v.notes,plannedSessions:num(v.plannedSessions)||'',qty:num(v.qty)||''});if(isNew)doc.byDoctor=true;const tid=await put('treatments',doc);markApptDone(pre.apptId);const nid=isNew?await nextBook(v,nxCtx,pid,nxProc(),tid):null;toast('تم تسجيل العمل'+(nid?' · وحُجزت الجلسة القادمة':''));if(nid)setTimeout(()=>bookedModal(nid),60);return}
+      if(!money_){const doc=Object.assign(isNew?{payments:[],schedule:[],fee:0,discount:0,plan:'partial',down:0}:clone(t),{patientId:pid,procedure:v.procedure,cat:v.cat||guessCat(v.procedure),clinicId:v.clinicId,doctorId:v.doctorId,chair:v.chair||'',date:v.date,teeth:v.teeth,notes:v.notes,plannedSessions:num(v.plannedSessions)||'',qty:num(v.qty)||''});if(isNew)doc.byDoctor=true;if(isNew&&pre.fromTx)doc.fromTx=pre.fromTx;const tid=await put('treatments',doc);markApptDone(pre.apptId);const nid=isNew?await nextBook(v,nxCtx,pid,nxProc(),tid):null;toast('تم تسجيل العمل'+(nid?' · وحُجزت الجلسة القادمة':''));if(nid)setTimeout(()=>bookedModal(nid),60);return}
       const total=Math.max(0,num(v.fee)-num(t.discount));if(total<=0)fail('أدخل كلفة العلاج');
-      const doc=Object.assign(isNew?{}:clone(t),{patientId:pid,procedure:v.procedure,cat:v.cat||guessCat(v.procedure),clinicId:v.clinicId,doctorId:v.doctorId,chair:v.chair||'',date:v.date,teeth:v.teeth,fee:num(v.fee),discount:num(t.discount),plan:v.plan,notes:v.notes,plannedSessions:num(v.plannedSessions)||'',qty:num(v.qty)||''});
+      const doc=Object.assign(isNew?{}:clone(t),{patientId:pid,procedure:v.procedure,cat:v.cat||guessCat(v.procedure),clinicId:v.clinicId,doctorId:v.doctorId,chair:v.chair||'',date:v.date,teeth:v.teeth,fee:num(v.fee),discount:num(t.discount),plan:v.plan,notes:v.notes,plannedSessions:num(v.plannedSessions)||'',qty:num(v.qty)||''});if(isNew&&pre.fromTx)doc.fromTx=pre.fromTx;
       if(v.plan==='installments'){doc.down=num(v.down);if(doc.down>=total)fail('المقدّمة تساوي أو تتجاوز الكلفة، اختر الدفع نقداً');doc.count=Math.max(1,Math.round(num(v.count)||1));doc.firstDue=v.firstDue||addMonths(v.date,1);doc.schedule=buildSchedule(total-doc.down,doc.count,doc.firstDue)}else{doc.schedule=[];doc.down=0;delete doc.count}
       if(isNew){doc.payments=[];const amt=!payOk?0:v.plan==='installments'?doc.down:(v.plan==='cash'&&v.paidNow===''?total:num(v.paidNow));if(amt>total)fail('المبلغ المستلم أكبر من الكلفة');if(amt>0)doc.payments.push({id:uid(),amount:amt,date:v.date,method:v.method,chair:v.chair||'',by:Store.me||null})}
       const tid=await put('treatments',doc);markApptDone(pre.apptId);const nid=isNew?await nextBook(v,nxCtx,pid,nxProc(),tid):null;toast('تم حفظ العلاج'+(nid?' · وحُجزت الجلسة القادمة':''));if(nid)setTimeout(()=>bookedModal(nid),60)}});
