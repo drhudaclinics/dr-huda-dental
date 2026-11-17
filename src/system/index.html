@@ -76,6 +76,14 @@ small.cur{font-size:.72em;color:var(--ink-3);font-weight:500;margin-inline-start
 .top-title h1{font-size:23px}
 .top-title p{margin:0;font-size:12.5px;color:var(--ink-3)}
 .net-st{display:inline-flex;align-items:center;gap:5px;margin-inline-start:6px;font-size:11.5px;font-weight:600;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}.net-st[hidden]{display:none}
+input.pk-in{cursor:pointer;caret-color:transparent;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2371827E' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 14px center;padding-inline-end:36px}
+.pk-sheet{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center}.pk-scrim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.pk-box{position:relative;width:min(520px,100%);max-height:78vh;display:flex;flex-direction:column;background:var(--surface);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.25);padding-bottom:env(safe-area-inset-bottom)}
+@media (min-width:700px){.pk-sheet{align-items:center}.pk-box{border-radius:20px;max-height:70vh}}
+.pk-h{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 6px}.pk-h b{font-size:16px}
+.pk-s{display:flex;align-items:center;gap:8px;margin:4px 14px 8px;padding:0 12px;height:44px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink-3)}.pk-s input{flex:1;border:0;background:transparent;font:inherit;font-size:16px;color:var(--ink);outline:none;min-width:0}
+.pk-l{overflow-y:auto;padding:0 8px 12px;display:grid;gap:2px}.pk-o{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:start;width:100%;min-height:48px;padding:10px 12px;border:0;border-radius:10px;background:transparent;font:inherit;font-size:15.5px;color:var(--ink);cursor:pointer}
+.pk-o:hover,.pk-o:focus-visible{background:var(--surface-2)}.pk-o.on{background:color-mix(in srgb,var(--accent,#0f766e) 12%,transparent);font-weight:600}.pk-o.pk-new{color:var(--accent,#0f766e);font-weight:600;justify-content:flex-start}
 .ea-over{display:grid;gap:8px;padding:12px;border-radius:12px;background:var(--warn-soft);color:var(--ink);font-size:13.5px}.ea-over[hidden]{display:none}.ea-over b{color:var(--warn)}.ea-over label{display:flex;align-items:center;gap:8px;flex-wrap:wrap;cursor:pointer}.ea-over select{max-width:100%}
 .or-prev{display:grid;gap:8px;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,#7c3aed 8%,var(--surface));border:1px solid color-mix(in srgb,#7c3aed 30%,var(--line))}.or-prev.empty{display:flex;align-items:center;gap:8px;color:var(--ink-2);font-size:13.5px;background:var(--surface-2);border-color:var(--line)}
 .or-h{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.or-h small{color:var(--ink-3);font-size:12px}.or-arch{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.or-l{min-width:52px;color:var(--ink-3);font-size:13px}.or-w{font-size:17px;letter-spacing:.2px}.or-acts{display:flex;gap:6px;flex-wrap:wrap;margin-inline-start:auto}.or-acts .chip{cursor:pointer;border:1px solid var(--line);font:inherit;font-size:12.5px}
@@ -3891,6 +3899,25 @@ ACTIONS.crExport=async()=>{const rg=drRange();const d=crData(rg);const q=v=>`"${
   document.addEventListener('pointermove',e=>{const el=e.target.closest&&e.target.closest('[data-tip]');if(el&&el.closest('.cr-page,#main'))show(el,e.clientX,e.clientY);else hide()},{passive:true});
   document.addEventListener('pointerdown',e=>{const el=e.target.closest&&e.target.closest('[data-tip]');if(el)show(el,e.clientX,e.clientY);else hide()},{passive:true});addEventListener('scroll',hide,{passive:true})})();
 
+/* ---------- Pick lists: fields with a suggestion list open a tap-to-choose sheet instead of the keyboard.
+   A search box filters the list, and anything not in the list can still be written ("استخدم «…»"). Patient names keep normal typing. ---------- */
+const PICK_SKIP=new Set(['dl-patients']);
+function armPickers(root){if(window.__noPick)return;(root||document).querySelectorAll('input[list]').forEach(inp=>{const l=inp.getAttribute('list');if(PICK_SKIP.has(l)||inp.dataset.pk)return;inp.dataset.pk='1';inp.readOnly=true;inp.classList.add('pk-in')})}
+try{new MutationObserver(ms=>{for(const m of ms)m.addedNodes.forEach(n=>{if(n.nodeType===1)armPickers(n.matches&&n.matches('input[list]')?n.parentNode:n)})}).observe(document.body,{childList:true,subtree:true})}catch(e){}
+function pickOpts(inp){const dl=document.getElementById(inp.getAttribute('list'));return dl?[...new Set([...dl.querySelectorAll('option')].map(o=>o.value).filter(Boolean))]:[]}
+function openPicker(inp){closePicker();const opts=pickOpts(inp);const lab=(inp.closest('.fld,.field,label')?.querySelector('label')||{}).textContent||inp.placeholder||'اختر';const cur=inp.value;
+  const el=document.createElement('div');el.className='pk-sheet';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');
+  el.innerHTML=`<div class="pk-scrim" data-pk-close></div><div class="pk-box"><div class="pk-h"><b>${esc(String(lab).replace('*','').trim())}</b><button type="button" class="icon-btn" data-pk-close aria-label="إغلاق">${ic('x')}</button></div>
+   <div class="pk-s">${ic('search',16)}<input type="search" placeholder="ابحث أو اكتب قيمة ثانية" autocomplete="off" enterkeyhint="done"></div><div class="pk-l" role="listbox"></div></div>`;
+  document.body.appendChild(el);const q=el.querySelector('.pk-s input'),list=el.querySelector('.pk-l');
+  const draw=()=>{const t=q.value.trim();const f=t?opts.filter(o=>o.toLowerCase().includes(t.toLowerCase())):opts;
+    list.innerHTML=(t&&!opts.some(o=>o===t)?`<button type="button" class="pk-o pk-new" data-v="${esc(t)}">${ic('plus',15)} استخدم «${esc(t)}»</button>`:'')+f.map(o=>`<button type="button" class="pk-o ${o===cur?'on':''}" role="option" aria-selected="${o===cur}" data-v="${esc(o)}"><span dir="auto">${esc(o)}</span>${o===cur?ic('check',15):''}</button>`).join('')+(!f.length&&!t?'<p class="muted" style="padding:12px;margin:0">ما أكو خيارات، اكتب بالبحث فوق</p>':'')};
+  draw();q.addEventListener('input',draw);q.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const b=list.querySelector('.pk-o');if(b)b.click()}});
+  el.addEventListener('click',e=>{if(e.target.closest('[data-pk-close]'))return closePicker();const b=e.target.closest('.pk-o');if(!b)return;inp.value=b.dataset.v;inp.dispatchEvent(new Event('input',{bubbles:true}));inp.dispatchEvent(new Event('change',{bubbles:true}));closePicker()});
+  const on=list.querySelector('.pk-o.on');if(on)on.scrollIntoView({block:'center'});pickerOpen=el}
+let pickerOpen=null;function closePicker(){if(pickerOpen){pickerOpen.remove();pickerOpen=null}}
+document.addEventListener('click',e=>{const inp=e.target.closest&&e.target.closest('input.pk-in');if(!inp||inp.disabled)return;e.preventDefault();openPicker(inp)});
+document.addEventListener('keydown',e=>{if(pickerOpen&&e.key==='Escape'){e.stopPropagation();closePicker()}else{const inp=e.target.closest&&e.target.closest('input.pk-in');if(inp&&(e.key==='Enter'||e.key===' '||e.key==='ArrowDown')){e.preventDefault();openPicker(inp)}}},true);
 /* ---------- Forms ---------- */
 /* ---------- Suppliers: purchase lists with items, payments per list, balances ---------- */
 const byDate=(a,b)=>(a.date||'').localeCompare(b.date||'')||(a.createdAt||'').localeCompare(b.createdAt||'');
