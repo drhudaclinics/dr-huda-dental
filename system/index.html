@@ -84,6 +84,7 @@ small.cur{font-size:.72em;color:var(--ink-3);font-weight:500;margin-inline-start
 .top-title h1{font-size:23px}
 .top-title p{margin:0;font-size:12.5px;color:var(--ink-3)}
 .net-st{display:inline-flex;align-items:center;gap:5px;margin-inline-start:6px;font-size:11.5px;font-weight:600;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}.net-st[hidden]{display:none}
+.fld input[type=date],.fld input[type=time]{min-width:0;max-width:100%;width:100%;-webkit-appearance:none;appearance:none;display:block;text-align:start}
 .dup-box.fam{border-color:color-mix(in srgb,var(--info) 40%,var(--line));background:var(--info-soft)}.dup-box.fam b{color:var(--info)}.pt-fam{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;font-size:12.5px;color:var(--ink-3)}.pt-fam a{cursor:pointer}
 .pk-wrap{position:relative;display:block}.pk-wrap.inl{display:inline-block}.pk-wrap>select{width:100%}.pk-cover{position:absolute;inset:0;background:transparent;border:0;cursor:pointer;padding:0;margin:0;width:100%;height:100%}
 .cp-hero{display:flex;align-items:center;gap:16px;padding:18px 20px;border:1.5px solid color-mix(in srgb,var(--ch) 45%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--ch) 14%,var(--surface)),var(--surface))}.cp-hero h2{margin:2px 0;font-size:24px}.cp-hero small{color:var(--ink-3)}.cp-hero p{margin:0;color:var(--ink-2);font-size:13.5px}.cp-trophy{font-size:40px;line-height:1}.cp-gap{text-align:center;padding-inline-start:14px;border-inline-start:1px solid var(--line)}.cp-gap b{display:block;font-size:22px;color:var(--good)}.cp-gap small{font-size:11.5px;color:var(--ink-3)}
@@ -4178,7 +4179,7 @@ function patientForm(p,after){
 }
 /* «per session» pricing (orthodontics…): no total price; every session has its own fee, paid at the session. Unpaid part only is debt.
    A saved treatment with no price at all is treated the same way, so its sessions can still take a fee. */
-const isPerSession=t=>!!t&&!t.legacy&&(t.plan==='session'||num(t.fee)===0);
+const isPerSession=t=>!!t&&!t.legacy&&(t.plan==='session'||num(t.fee)===0||(isOrtho(t)&&tBal(t)<=0));
 const lastSessFee=t=>{const ss=(t.sessions||[]).filter(x=>num(x.fee)>0).sort((a,b)=>(a.date||'').localeCompare(b.date||''));return ss.length?num(ss[ss.length-1].fee):num(t.sessFee)||0};
 const otherOpenTx=t=>t&&t.id?all('treatments').filter(x=>x.patientId===t.patientId&&x.id!==t.id&&tBal(x)>0):[];
 function treatmentForm(t,pid,pre){
