@@ -84,6 +84,7 @@ small.cur{font-size:.72em;color:var(--ink-3);font-weight:500;margin-inline-start
 .top-title h1{font-size:23px}
 .top-title p{margin:0;font-size:12.5px;color:var(--ink-3)}
 .net-st{display:inline-flex;align-items:center;gap:5px;margin-inline-start:6px;font-size:11.5px;font-weight:600;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}.net-st[hidden]{display:none}
+.dup-box.fam{border-color:color-mix(in srgb,var(--info) 40%,var(--line));background:var(--info-soft)}.dup-box.fam b{color:var(--info)}.pt-fam{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;font-size:12.5px;color:var(--ink-3)}.pt-fam a{cursor:pointer}
 .pk-wrap{position:relative;display:block}.pk-wrap.inl{display:inline-block}.pk-wrap>select{width:100%}.pk-cover{position:absolute;inset:0;background:transparent;border:0;cursor:pointer;padding:0;margin:0;width:100%;height:100%}
 .cp-hero{display:flex;align-items:center;gap:16px;padding:18px 20px;border:1.5px solid color-mix(in srgb,var(--ch) 45%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--ch) 14%,var(--surface)),var(--surface))}.cp-hero h2{margin:2px 0;font-size:24px}.cp-hero small{color:var(--ink-3)}.cp-hero p{margin:0;color:var(--ink-2);font-size:13.5px}.cp-trophy{font-size:40px;line-height:1}.cp-gap{text-align:center;padding-inline-start:14px;border-inline-start:1px solid var(--line)}.cp-gap b{display:block;font-size:22px;color:var(--good)}.cp-gap small{font-size:11.5px;color:var(--ink-3)}
 @media (max-width:560px){.cp-hero{flex-wrap:wrap}.cp-gap{border:0;padding:0}}
@@ -750,7 +751,7 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 <script>
 "use strict";
 /* ---------- Constants ---------- */
-const FILL_TYPES=["حشوة كومبوزيت (ضوئية)", "حشوة كومبوزيت تجميلية (أمامية)", "حشوة أملغم (فضية)", "حشوة زجاجية GIC", "حشوة مؤقتة", "حشوة عصب (علاج جذور)", "علاج جذور · قناة واحدة", "علاج جذور · قناتان", "علاج جذور · ثلاث قنوات فأكثر", "إعادة علاج جذور", "حشوة لبية (بالبوتي)", "دعامة ليفية (Post)", "حشوة أسنان لبنية", "حشوة كومبوزيت ضرس خلفي", "قلع بسيط", "قلع جراحي", "قلع ضرس عقل", "تنظيف وتلميع", "علاج لثة"];
+const FILL_TYPES=["حشوة كومبوزيت (ضوئية)", "حشوة كومبوزيت تجميلية (أمامية)", "حشوة أملغم (فضية)", "حشوة زجاجية GIC", "حشوة مؤقتة", "حشوة عصب (علاج جذور)", "علاج جذور · قناة واحدة", "علاج جذور · قناتان", "علاج جذور · ثلاث قنوات فأكثر", "إعادة علاج جذور", "حشوة بلبتك (Pulpectomy) للأطفال", "حشوة بلبوتومي (Pulpotomy) للأطفال", "دعامة ليفية (Post)", "حشوة أسنان لبنية", "حشوة كومبوزيت ضرس خلفي", "قلع بسيط", "قلع جراحي", "قلع ضرس عقل", "تنظيف وتلميع", "علاج لثة"];
 const PROCS=['فحص واستشارة','أشعة','تنظيف وتلميع','حشوة تجميلية','حشوة عصب (علاج جذور)','قلع بسيط','قلع جراحي','تاج زيركون','تاج بورسلين','جسر','فينير (قشور)','زراعة','طقم كامل','طقم جزئي','تبييض','تقويم','علاج لثة','أسنان أطفال'].concat(FILL_TYPES.filter(x=>!['قلع بسيط','قلع جراحي','تنظيف وتلميع','علاج لثة'].includes(x)));
 const LAB_WORKS=['تاج زيركون','تاج PFM بورسلين على معدن','تاج E-max','فينير E-max','جسر زيركون','تاج على زرعة','طقم كامل أكريل','طقم جزئي معدني','طقم مرن','واقي ليلي','ريتينر تقويم'];
 const SHADES=['A1','A2','A3','A3.5','A4','B1','B2','B3','C1','C2','C3','D2','D3','BL1','BL2','BL3'];
@@ -1354,7 +1355,7 @@ PAGES.patient=()=>{
   const pcR=patientClinics(p.id),pcTop=pcR.length>1||pcR.some(r=>!myClinic(r.cid));
   const ap=all('appointments').filter(a=>a.patientId===p.id&&(isAdmin()||cf(a))).sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time)).slice(0,8);
   return `<div class="crumbs"><a href="#patients" data-act="go" data-page="patients">${isDoctor()?'مرضاي':'المرضى'}</a><span>‹</span><span>${esc(p.name)}</span></div>
-  <section class="card pt-head"><div class="pt-id"><div class="avatar">${esc(initials(p.name))}</div><div style="min-width:0"><h2>${esc(p.name)}${sampleTag(p)}</h2><p class="muted">${[p.phone?`<span dir="ltr">${esc(p.phone)}</span>`:'',esc(clinicName(p.clinicId)),(()=>{const ds=ptTreatingDocs(p.id);return ds.length?'يعالجه: <b>'+ds.map(d=>esc(docName(d))).join('، ')+'</b>':''})(),esc(p.gender||''),p.age?esc(p.age)+' سنة':''].filter(Boolean).join(' · ')}</p>
+  <section class="card pt-head"><div class="pt-id"><div class="avatar">${esc(initials(p.name))}</div><div style="min-width:0"><h2>${esc(p.name)}${sampleTag(p)}</h2><p class="muted">${[p.phone?`<span dir="ltr">${esc(p.phone)}</span>`:'',esc(clinicName(p.clinicId)),(()=>{const ds=ptTreatingDocs(p.id);return ds.length?'يعالجه: <b>'+ds.map(d=>esc(docName(d))).join('، ')+'</b>':''})(),esc(p.gender||''),p.age?esc(p.age)+' سنة':''].filter(Boolean).join(' · ')}</p>${(()=>{const f=ptFamily(p);return f.length?`<div class="pt-fam">${ic('users',14)} نفس الرقم (العائلة): ${f.map(x=>`<a class="chip info" data-act="openPatient" data-id="${x.id}">${esc(x.name)}</a>`).join('')}</div>`:''})()}
    ${(p.alerts||[]).length?`<div class="alerts">${ic('alert',15)}<b style="font-size:13px">تنبيه طبي:</b>${p.alerts.map(a=>chip(a,'bad')).join('')}</div>`:''}${p.notes?`<p class="note">${esc(p.notes)}</p>`:''}</div></div>
    <div class="pt-actions">${openTx(p).some(t=>!t.legacy||sessDone(t))?`<button class="btn primary" data-act="visitStart" data-pid="${p.id}">${ic('tooth',16)} تسجيل جلسة</button><button class="btn" data-act="newTreatment" data-pid="${p.id}">${ic('plus',16)} ${isDoctor()?'عمل جديد':'علاج جديد'}</button>`:`<button class="btn primary" data-act="newTreatment" data-pid="${p.id}">${ic('plus',16)} ${isDoctor()?'تسجيل عمل':'علاج جديد'}</button>`}<button class="btn" data-act="newAppt" data-pid="${p.id}">${ic('calendar',16)} موعد</button>${locBtn(p)}<button class="btn" data-act="newLab" data-pid="${p.id}">${ic('tooth',16)} طلب مختبر</button>${seeMoney()&&can('price')?`<button class="btn" data-act="addDebt" data-pid="${p.id}">${ic('wallet',16)} إضافة دين / متبقي</button>`:''}${seeMoney()&&can('print')&&ts.length?`<button class="btn" data-act="printRc" data-pid="${p.id}">${ic('receipt',16)} كشف حساب للطباعة</button>`:''}${seeMoney()&&can('demand')&&total-paid>0?`<button class="btn wa" data-act="demand" data-id="${p.id}">${ic('chat',16)} مطالبة بالدفع</button>`:waBtn(p.phone,`مرحباً ${p.name}،\n${SIGN}`,'واتساب')}<button class="icon-btn" data-act="editPatient" data-id="${p.id}" aria-label="تعديل بيانات المريض">${ic('edit')}</button>${can('editPatient')||isAdmin()?`<button class="btn sm" data-act="changeDoc" data-pid="${p.id}">${ic('steth',15)} تغيير الطبيب المعالج</button>`:''}${isAdmin()&&!Store.preview?`<button class="icon-btn danger" data-act="delPatient" data-id="${p.id}" aria-label="حذف المريض" title="حذف المريض">${ic('trash')}</button>`:''}</div></section>
   ${p.noPhone&&!p.phone?`<div class="mode-banner" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${ic('phone',16)}<span style="flex:1;min-width:200px">بدون رقم موبايل${p.noPhoneWhy?' · '+esc(p.noPhoneWhy):''}. ما توصله رسائل التذكير والمتابعة. أضف رقمه أول ما يتوفر.</span><button class="btn sm" data-act="editPatient" data-id="${p.id}">${ic('edit',14)} إضافة رقم</button></div>`:''}
@@ -1558,7 +1559,7 @@ async function claimCode(raw){
 }
 INPUTS.joinCode=v=>{state.joinCode=v};
 function quickWork(){
-  formModal({title:isDoctor()?'تسجيل عمل':'تسجيل علاج',sub:'اختر المريض، أو اكتب اسماً جديداً لإضافته',fields:[{k:'patient',label:'المريض',type:'patient'},{k:'newPhone',label:'موبايل المريض الجديد (مطلوب)',type:'tel',ph:'07xxxxxxxxx',show:v=>!v.patient&&!!v.patient_new&&!v.newNo},{k:'newNo',label:'ما عنده رقم / رفض إعطاء الرقم',type:'checkbox',show:v=>!v.patient&&!!v.patient_new},{k:'newWhy',label:'السبب',type:'select',opts:NP_REASONS,show:v=>!v.patient&&!!v.patient_new&&!!v.newNo},{k:'dupbox',type:'html',html:'<div id="dup-box" data-mode="pick"></div>',show:v=>!v.patient&&!!v.patient_new&&findDupes(v.patient_new,v.newPhone).length>0},{k:'notDup',label:'تأكدت أنه مريض جديد مختلف',type:'checkbox',show:v=>!v.patient&&!!v.patient_new&&findDupes(v.patient_new,v.newPhone).length>0}],submit:'متابعة',
+  formModal({title:isDoctor()?'تسجيل عمل':'تسجيل علاج',sub:'اختر المريض، أو اكتب اسماً جديداً لإضافته',fields:[{k:'patient',label:'المريض',type:'patient'},{k:'newPhone',label:'موبايل المريض الجديد (مطلوب)',type:'tel',ph:'07xxxxxxxxx',show:v=>!v.patient&&!!v.patient_new&&!v.newNo},{k:'newNo',label:'ما عنده رقم / رفض إعطاء الرقم',type:'checkbox',show:v=>!v.patient&&!!v.patient_new},{k:'newWhy',label:'السبب',type:'select',opts:NP_REASONS,show:v=>!v.patient&&!!v.patient_new&&!!v.newNo},{k:'dupbox',type:'html',html:'<div id="dup-box" data-mode="pick"></div>',show:v=>!v.patient&&!!v.patient_new&&findDupes(v.patient_new,v.newPhone).length>0},{k:'notDup',label:'تأكدت أنه مريض جديد مختلف',type:'checkbox',show:v=>!v.patient&&!!v.patient_new&&dupBlock(findDupes(v.patient_new,v.newPhone)).length>0}],submit:'متابعة',
     onChange:(v,form)=>{const box=form.querySelector('#dup-box');if(box)setBox(box,!v.patient&&v.patient_new?dupBoxHTML(findDupes(v.patient_new,v.newPhone),'pick'):'')},
     onSubmit:async(v,form)=>{let pid=v.patient;if(!pid){if(!v.patient_new)fail('اكتب اسم المريض');if(!v.newNo){const pe=phoneErr(v.newPhone);if(pe)return fieldErr(form,'newPhone',pe)}if(!dupGate(findDupes(v.patient_new,v.newNo?'':v.newPhone),v,form))return false;pid=await put('patients',{name:v.patient_new,phone:v.newNo?'':phoneNorm(v.newPhone),noPhone:!!v.newNo,noPhoneWhy:v.newNo?(v.newWhy||NP_REASONS[0][0]):'',clinicId:defaultClinic()})}setTimeout(()=>treatmentForm(null,pid),30)}});
 }
@@ -2082,8 +2083,11 @@ const normAr=s=>normDigits(s||'').replace(/[ً-ْـ]/g,'').replace(/[أإآٱ]/g
 function lev(a,b){if(Math.abs(a.length-b.length)>2)return 9;const n=b.length;let prev=Array.from({length:n+1},(_,j)=>j);for(let i=1;i<=a.length;i++){const cur=[i];for(let j=1;j<=n;j++)cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=cur}return prev[n]}
 function findDupes(name,phone,exceptId){
   const nn=normAr(name),pk=phoneKey(phone);const out=[];if(!nn&&!pk)return out;
-  for(const p of all('patients')){if(p.id===exceptId)continue;const pn=normAr(p.name);let reason='';
-    if(pk&&phoneKey(p.phone)===pk)reason='نفس رقم الهاتف';
+  for(const p of all('patients')){if(p.id===exceptId)continue;const pn=normAr(p.name);let reason='';const samePh=!!pk&&phoneKey(p.phone)===pk;
+    /* a family shares one phone: same number with a clearly different name is a relative, shown for information only */
+    const nameLike=nn&&pn&&(nn===pn||lev(nn,pn)<=(nn.length>12?2:1));
+    if(samePh&&(nameLike||!nn))reason='نفس رقم الهاتف';
+    else if(samePh){out.push({p,reason:'نفس الرقم · ممكن من نفس العائلة',family:true,strong:false});continue}
     else if(nn&&pn===nn)reason='نفس الاسم';
     else if(nn&&pn&&nn.length>=5){const a=nn.split(' '),b=pn.split(' ');
       if(a.length>=2&&b.length>=2&&a[0]===b[0]&&a[1]===b[1])reason='نفس الاسم واسم الأب';
@@ -2091,10 +2095,11 @@ function findDupes(name,phone,exceptId){
     if(reason)out.push({p,reason,strong:reason==='نفس رقم الهاتف'||reason==='نفس الاسم'})}
   return out.sort((a,b)=>b.strong-a.strong).slice(0,6);
 }
-function dupBoxHTML(list,mode){if(!list.length)return '';
-  return `<div class="dup-box" role="alert"><b>${ic('alert',16)} هذا المريض قد يكون مسجّلاً مسبقاً</b>${list.map(d=>{const s=patientStats().get(d.p.id);return `<div class="dup-row"><div class="grow"><div class="t">${esc(d.p.name)}${sampleTag(d.p)}</div><div class="s">${esc(d.reason)}${d.p.age?' · '+esc(d.p.age)+' سنة':''} · <span dir="ltr">${esc(d.p.phone||'بدون رقم')}</span> · ${esc(clinicName(d.p.clinicId))}${s?` · ${s.count} عمل`:''}</div></div><button type="button" class="btn sm ${mode==='pick'?'primary':''}" data-act="${mode==='pick'?'dupPick':'dupOpen'}" data-id="${d.p.id}">${mode==='pick'?'اختيار هذا المريض':'فتح ملفه'}</button></div>`}).join('')}<small>إذا كان شخصاً آخر (مثلاً أحد أفراد العائلة بنفس الرقم)، أشّر «تأكدت أنه مريض مختلف» ثم احفظ.</small></div>`}
+function dupBoxHTML(list,mode){if(!list.length)return '';const fam=!dupBlock(list).length;
+  return `<div class="dup-box ${fam?'fam':''}" role="${fam?'status':'alert'}"><b>${fam?`${ic('users',16)} نفس الرقم مسجّل لفرد من العائلة · تكدر تحفظ عادي`:`${ic('alert',16)} هذا المريض قد يكون مسجّلاً مسبقاً`}</b>${list.map(d=>{const s=patientStats().get(d.p.id);return `<div class="dup-row"><div class="grow"><div class="t">${esc(d.p.name)}${sampleTag(d.p)}</div><div class="s">${esc(d.reason)}${d.p.age?' · '+esc(d.p.age)+' سنة':''} · <span dir="ltr">${esc(d.p.phone||'بدون رقم')}</span> · ${esc(clinicName(d.p.clinicId))}${s?` · ${s.count} عمل`:''}</div></div><button type="button" class="btn sm ${mode==='pick'?'primary':''}" data-act="${mode==='pick'?'dupPick':'dupOpen'}" data-id="${d.p.id}">${mode==='pick'?'اختيار هذا المريض':'فتح ملفه'}</button></div>`}).join('')}<small>إذا كان شخصاً آخر (مثلاً أحد أفراد العائلة بنفس الرقم)، أشّر «تأكدت أنه مريض مختلف» ثم احفظ.</small></div>`}
 const setBox=(box,html)=>{if(box.__h!==html){box.innerHTML=html;box.__h=html}};
-const dupGate=(list,v,form)=>{if(list.length&&!v.notDup){const box=form.querySelector('#dup-box');if(box)setBox(box,dupBoxHTML(list,box.dataset.mode));toast('تحقق من التكرار قبل الإضافة','warn');return false}return true};
+const dupBlock=l=>l.filter(d=>!d.family);
+const dupGate=(list,v,form)=>{if(dupBlock(list).length&&!v.notDup){const box=form.querySelector('#dup-box');if(box)setBox(box,dupBoxHTML(list,box.dataset.mode));toast('تحقق من التكرار قبل الإضافة','warn');return false}return true};
 ACTIONS.dupOpen=d=>{closeModal();reach(d.id);go('patient',{patientId:d.id})};
 ACTIONS.dupPick=(d,el)=>{const p=get('patients',d.id);const inp=document.querySelector('#modal-root #f_patient');if(p&&inp){inp.value=patientLabel(p);inp.dispatchEvent(new Event('input',{bubbles:true}));const nd=document.querySelector('#modal-root #f_notDup');if(nd)nd.checked=false;const box=document.querySelector('#dup-box');if(box)setBox(box,'');toast('تم اختيار '+p.name)}};
 /* merge tool: groups by same phone or same normalised name */
@@ -2645,7 +2650,7 @@ function apptForm(a,pid){
   return formModal({title:a.id?'تعديل الموعد':(a.bookingId?'حجز موعد لطلب من الموقع':'موعد جديد'),fields:[
     {k:'patient',label:'المريض',type:'patient'},{k:'newPhone',label:'موبايل المريض الجديد (مطلوب)',type:'tel',ph:'07xxxxxxxxx',show:v=>!v.patient&&!!v.patient_new&&!v.newNo,hint:'سيُنشأ ملف جديد لهذا المريض'},{k:'newNo',label:'ما عنده رقم / رفض إعطاء الرقم',type:'checkbox',show:v=>!v.patient&&!!v.patient_new},{k:'newWhy',label:'السبب',type:'select',opts:NP_REASONS,show:v=>!v.patient&&!!v.patient_new&&!!v.newNo},
     {k:'dupbox',type:'html',html:'<div id="dup-box" data-mode="pick"></div>',show:v=>!v.patient&&!!v.patient_new&&findDupes(v.patient_new,v.newPhone).length>0},
-    {k:'notDup',label:'تأكدت أنه مريض جديد مختلف',type:'checkbox',show:v=>!v.patient&&!!v.patient_new&&findDupes(v.patient_new,v.newPhone).length>0},
+    {k:'notDup',label:'تأكدت أنه مريض جديد مختلف',type:'checkbox',show:v=>!v.patient&&!!v.patient_new&&dupBlock(findDupes(v.patient_new,v.newPhone)).length>0},
     {k:'clinicId',label:'العيادة',type:'select',opts:optClinics(),req:true,half:true},{k:'doctorId',label:'الطبيب',type:'select',opts:optDoctors(),empty:'— غير محدد —',half:true},
     {k:'chair',label:'الكرسي',type:'select',opts:chairOpts(maxChairs()),empty:'— غير محدد —',half:true,show:v=>chairCount(v.clinicId)>1},
     {k:'date',label:'التاريخ',type:'date',req:true,third:true},{k:'time',label:'الوقت',type:'time',req:true,third:true},{k:'dur',label:'المدة',type:'select',third:true,opts:[['15','15 دقيقة'],['30','30 دقيقة'],['45','45 دقيقة'],['60','ساعة'],['90','ساعة ونصف'],['120','ساعتان']]},
@@ -2996,7 +3001,7 @@ Object.assign(ACTIONS,{
   opBack:()=>{op.step=Math.max(1,op.step-1);opRender()},
   opNext:()=>{
     const e=opValid();if(e)return toast(e,'warn');
-    if(op.step===1&&!op.existingId&&!op.dupOk){const d=findDupes(op.name,op.phone);if(d.length){op.dupes=d;opRender();toast('تحقق من التكرار قبل المتابعة','warn');return}}
+    if(op.step===1&&!op.existingId&&!op.dupOk){const d=dupBlock(findDupes(op.name,op.phone));if(d.length){op.dupes=d;opRender();toast('تحقق من التكرار قبل المتابعة','warn');return}}
     op.step++;opRender();const b=document.getElementById('op-body');if(b)b.scrollTop=0},
   opSave:async(d,el)=>{
     const e=opValid();if(e)return toast(e,'warn');const again=!!d.again;const rec=opRec();el.disabled=true;
@@ -3056,7 +3061,7 @@ function fiBuild(text,o){
     const byPhone=phoneKey(G.phone)?all('patients').find(p=>phoneKey(p.phone)===phoneKey(G.phone)):null;
     const byName=!byPhone?all('patients').find(p=>normAr(p.name)===normAr(G.name)):null;
     G.existing=byPhone||byName||null;
-    if(!G.existing){const f=findDupes(G.name,G.phone);if(f.length)G.fuzzy=f[0]}
+    if(!G.existing){const f=dupBlock(findDupes(G.name,G.phone));if(f.length)G.fuzzy=f[0]}
     if(G.existing){const have=new Set(all('treatments').filter(t=>t.patientId===G.existing.id).map(txKey));G.tx.forEach(t=>{t.dup=have.has(txKey(t))});if(G.balance&&all('treatments').some(t=>t.patientId===G.existing.id&&t.legacy&&Math.round(tTotal(t))===Math.round(G.balance.amount)))G.balanceDup=true}
     G.fee=sum(G.tx.filter(t=>!t.dup),t=>t.fee)+(G.balance&&!G.balanceDup?G.balance.amount:0);G.paid=sum(G.tx.filter(t=>!t.dup),t=>t.paid);
     G.newItems=G.tx.filter(t=>!t.dup).length+(G.balance&&!G.balanceDup?1:0);if(!G.newItems&&G.existing)G.include=false;if(G.bad&&!G.tx.length&&!G.balance){G.include=false;G.warn.push('كل أسطره فيها أخطاء')}
@@ -3622,6 +3627,8 @@ ACTIONS.failExport=async()=>{const rg=drRange();const q=v=>`"${String(v??'').rep
 const PT_RULES=[
   ['implant','زراعة',/زراع|implant/i,12,true],
   ['surg','قلع جراحي / ضرس عقل',/جراح|عقل|مطمور/,8,true],
+  ['pulpx','حشوة بلبتك (أطفال)',/بلبتك|بلبكتومي|pulpectomy/i,4,true],
+  ['pulpo','حشوة بلبوتومي (أطفال)',/بلبوت|بالبوت|لبية|pulpotomy/i,3,true],
   ['rct2','إعادة علاج عصب',/إعادة\s*(حشوة|علاج)\s*عصب|اعادة\s*(حشوة|علاج)\s*عصب/,9,true],
   ['rct','حشوة عصب / علاج جذور',/عصب|جذور|لب/,7,true],
   ['ortho','تقويم',/تقويم/,10,false],
@@ -3759,6 +3766,7 @@ ACTIONS.perfRate=d=>{const doc=get('doctors',d.id);if(!doc)return;
 /* ---------- Change a patient's doctor: the patient's own doctor, and optionally his treatments and upcoming appointments ---------- */
 const ptOpenTx=pid=>all('treatments').filter(t=>t.patientId===pid&&(tBal(t)>0||(num(t.plannedSessions)>sessDone(t))));
 /* the doctors actually treating the patient: open treatments first, else the latest treatment's doctor */
+const ptFamily=p=>{const k=phoneKey(p&&p.phone);return k?all('patients').filter(x=>x.id!==p.id&&phoneKey(x.phone)===k):[]};
 const ptTreatingDocs=pid=>{const ts=all('treatments').filter(t=>t.patientId===pid&&!t.legacy);const open=ts.filter(t=>tBal(t)>0||num(t.plannedSessions)>sessDone(t));const src=(open.length?open:ts.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,1));
   const ids=new Set();src.forEach(t=>{const last=(t.sessions||[]).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')).pop();ids.add((last&&last.doctorId)||t.doctorId)});return [...ids].filter(Boolean)};
 function changeDoctorForm(pid){
@@ -4146,7 +4154,7 @@ function patientForm(p,after){
   formModal({title:p.id?'تعديل بيانات المريض':'مريض جديد',fields:[
     {k:'phone',label:'رقم موبايل المريض (مطلوب)',type:'tel',ph:'07xxxxxxxxx',half:true,hint:'اكتبه أولاً: النظام يتأكد فوراً إن المريض مو مسجّل من قبل',show:v=>!v.noPhone},{k:'clinicId',label:'العيادة',type:'select',opts:optClinics(),req:true,half:true},...noPhoneFields('p',null).map(f=>f.k==='pNo'?Object.assign(f,{k:'noPhone'}):Object.assign(f,{k:'noPhoneWhy',show:v=>!!v.noPhone})),{k:'name',label:'الاسم الكامل',req:true,hint:'إذا ما عنده رقم اكتب الاسم الثلاثي والعمر حتى ما ينلخبط مع غيره'},
     {k:'dupbox',type:'html',html:'<div id="dup-box" data-mode="open"></div>',show:v=>findDupes(v.name,v.noPhone?'':v.phone,p.id).length>0},
-    {k:'notDup',label:'تأكدت أنه مريض مختلف عن الموجودين',type:'checkbox',show:v=>findDupes(v.name,v.noPhone?'':v.phone,p.id).length>0},
+    {k:'notDup',label:'تأكدت أنه مريض مختلف عن الموجودين',type:'checkbox',show:v=>dupBlock(findDupes(v.name,v.noPhone?'':v.phone,p.id)).length>0},
     {k:'gender',label:'الجنس',type:'select',opts:[['أنثى','أنثى'],['ذكر','ذكر']],empty:'—',half:true},{k:'age',label:'العمر',type:'number',min:0,max:120,half:true},
     {k:'alerts',label:'تنبيهات طبية',type:'checks',opts:ALERTS.map(a=>[a,a])},{k:'notes',label:'ملاحظات',type:'textarea',rows:2},
     {k:'sFin',type:'section',label:seeMoney()?'العلاج والحساب':'العلاج',hint:seeMoney()?'اختياري. حدد العلاج والأسنان، واكتب الكلفة الكلية والمبلغ الواصل. المتبقي يُسجَّل تلقائياً في ذمم المرضى.':'اختياري. حدد العلاج والأسنان التي ستعمل عليها.',show:()=>!p.id},
